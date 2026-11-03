@@ -1,0 +1,1571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Merritt Quantitative Work</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <style>
+      :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+      body{margin:0}
+      img{max-width:100%}
+      [hidden]{display:none!important}
+    </style>
+  </head>
+  <body>
+<style>
+/* Layout: a quant research note for screen — masthead, sticky section index,
+   single reading column at ~68ch, figures and data tables break the measure. */
+:root {
+  --paper:      #F4F6F8;
+  --surface:    #FFFFFF;
+  --surface-2:  #EDF1F5;
+  --ink:        #0E1419;
+  --ink-2:      #39434F;
+  --ink-3:      #5F6B78;
+  --rule:       #D3DAE2;
+  --rule-soft:  #E4E9EE;
+  --accent:     #1A3D63;
+  --accent-2:   #2E6DA4;
+  --accent-wash:#E5ECF3;
+  --pos:        #16624B;
+  --neg:        #92291F;
+  --c1:         #1A5A94;
+  --c2:         #D07410;
+  --c1-wash:    #DEE9F3;
+  --c2-wash:    #F7E7D5;
+  --on-fill:    #FFFFFF;
+  --grid:       #E1E7ED;
+  --display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --body: "Spectral", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0A0F15;
+    --surface:    #111A23;
+    --surface-2:  #16202B;
+    --ink:        #E5EAF1;
+    --ink-2:      #AFBAC7;
+    --ink-3:      #8592A0;
+    --rule:       #253040;
+    --rule-soft:  #1A242F;
+    --accent:     #8FB6DF;
+    --accent-2:   #A9C8E8;
+    --accent-wash:#14202C;
+    --pos:        #52C097;
+    --neg:        #E58376;
+    --c1:         #6BAEEE;
+    --c2:         #E59B3C;
+    --c1-wash:    #152532;
+    --c2-wash:    #2A2014;
+    --on-fill:    #0A0F15;
+    --grid:       #1F2A36;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:      #0A0F15;
+  --surface:    #111A23;
+  --surface-2:  #16202B;
+  --ink:        #E5EAF1;
+  --ink-2:      #AFBAC7;
+  --ink-3:      #8592A0;
+  --rule:       #253040;
+  --rule-soft:  #1A242F;
+  --accent:     #8FB6DF;
+  --accent-2:   #A9C8E8;
+  --accent-wash:#14202C;
+  --pos:        #52C097;
+  --neg:        #E58376;
+  --c1:         #6BAEEE;
+  --c2:         #E59B3C;
+  --c1-wash:    #152532;
+  --c2-wash:    #2A2014;
+  --on-fill:    #0A0F15;
+  --grid:       #1F2A36;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 40;
+  background: var(--paper);
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- masthead ---------- */
+.masthead { position: relative; border-bottom: 1px solid var(--rule); overflow: hidden; }
+#paths { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.masthead .wrap { position: relative; z-index: 2; padding-block: 4.25rem 2.5rem; }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.675rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 1.4rem;
+}
+h1 {
+  font-family: var(--display); font-optical-sizing: auto; font-weight: 500;
+  font-size: clamp(2.6rem, 7.5vw, 4.6rem); line-height: 1.02;
+  letter-spacing: -0.014em; margin: 0 0 0.1em; text-wrap: balance;
+}
+.h1-sub {
+  font-family: var(--display); font-weight: 400; font-style: italic;
+  font-size: clamp(1.1rem, 2.6vw, 1.5rem); color: var(--ink-2); margin: 0 0 2rem;
+}
+.thesis { max-width: 34rem; font-size: 1.1rem; color: var(--ink-2); margin: 0 0 2.2rem; }
+.thesis strong { color: var(--ink); font-weight: 600; }
+.ident {
+  display: flex; flex-wrap: wrap; gap: 0.55rem 1.6rem;
+  font-family: var(--mono); font-size: 0.73rem; letter-spacing: 0.04em;
+  color: var(--ink-3); padding-top: 1.3rem; border-top: 1px solid var(--rule); max-width: 44rem;
+}
+.ident b { color: var(--ink-2); font-weight: 500; }
+.canvas-note {
+  position: relative; z-index: 2; font-family: var(--mono); font-size: 0.64rem;
+  letter-spacing: 0.03em; color: var(--ink-3); opacity: 0.85;
+  padding-block: 0 0.9rem; max-width: 40rem;
+}
+
+/* ---------- section index ---------- */
+.index-bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.index-bar .wrap { padding-block: 0; }
+.index-scroll { display: flex; gap: 1.45rem; overflow-x: auto; scrollbar-width: none; padding-block: 0.7rem; }
+.index-scroll::-webkit-scrollbar { display: none; }
+.index-scroll a {
+  flex: none; font-family: var(--mono); font-size: 0.69rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+  white-space: nowrap; padding-bottom: 2px; border-bottom: 1.5px solid transparent;
+}
+.index-scroll a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---------- sections ---------- */
+section { border-bottom: 1px solid var(--rule-soft); }
+section > .wrap { padding-block: 3.6rem; }
+.sec-head { display: flex; gap: 1.1rem; align-items: baseline; margin-bottom: 1.9rem; }
+.sec-num {
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 500; color: var(--accent);
+  letter-spacing: 0.08em; padding-top: 0.45rem; flex: none;
+}
+h2 {
+  font-family: var(--display); font-weight: 500; font-size: clamp(1.55rem, 3.6vw, 2.15rem);
+  line-height: 1.16; letter-spacing: -0.008em; margin: 0; text-wrap: balance;
+}
+h3 { font-family: var(--body); font-weight: 600; font-size: 1.12rem; line-height: 1.3; margin: 0 0 0.55rem; }
+.lede { max-width: 38rem; font-size: 1.08rem; color: var(--ink-2); }
+.prose { max-width: 38rem; }
+.prose p { margin: 0 0 1.05rem; }
+.prose p:last-child { margin-bottom: 0; }
+a { color: var(--accent); }
+
+.stat-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 2.2rem;
+}
+.stat { background: var(--surface); padding: 1.1rem 1.15rem; }
+.stat .v {
+  font-family: var(--mono); font-size: 1.42rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; line-height: 1.1; color: var(--ink);
+}
+.stat .k {
+  font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: 0.45rem;
+}
+
+/* ---------- exhibits ---------- */
+.exhibits { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (min-width: 880px) { .exhibits { grid-template-columns: repeat(3, 1fr); } }
+.exhibit { background: var(--surface); padding: 1.5rem 1.45rem; min-width: 0; }
+.exhibit .tag {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.exhibit p { margin: 0 0 0.85rem; font-size: 0.97rem; color: var(--ink-2); }
+.exhibit p:last-child { margin-bottom: 0; }
+.exhibit .figure {
+  font-family: var(--mono); font-size: 1.05rem; font-weight: 500;
+  font-variant-numeric: tabular-nums; color: var(--ink); display: block; margin-bottom: 0.3rem;
+}
+
+/* ---------- capability ---------- */
+.cap-grid { display: grid; gap: 2.4rem; }
+@media (min-width: 820px) { .cap-grid { grid-template-columns: 1fr 1fr; gap: 3rem; } }
+.cap-col h3 {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--accent); padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--rule); margin-bottom: 1.15rem;
+}
+.cap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.05rem; }
+.cap-list li { min-width: 0; }
+.cap-list .n { font-weight: 600; display: block; margin-bottom: 0.12rem; }
+.cap-list .d { font-size: 0.95rem; color: var(--ink-3); }
+
+/* ---------- projects ---------- */
+.project { border: 1px solid var(--rule); background: var(--surface); margin-bottom: 1.6rem; }
+.project:last-child { margin-bottom: 0; }
+.p-head { padding: 1.5rem 1.5rem 1.25rem; border-bottom: 1px solid var(--rule-soft); }
+.p-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.1rem;
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.8rem;
+}
+.p-meta .dom { color: var(--accent); font-weight: 600; }
+.p-glyph { width: 20px; height: 20px; color: var(--accent); flex: none; display: block; }
+.p-title {
+  font-family: var(--display); font-weight: 500; font-size: clamp(1.2rem, 2.9vw, 1.6rem);
+  line-height: 1.17; margin: 0 0 0.7rem; text-wrap: balance;
+}
+.p-q { max-width: 40rem; color: var(--ink-2); margin: 0; font-size: 1.02rem; }
+.p-body { padding: 1.4rem 1.5rem 1.6rem; display: grid; gap: 1.6rem; }
+@media (min-width: 900px) { .p-body { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 2.2rem; } }
+.p-block { min-width: 0; }
+.blk-label {
+  font-family: var(--mono); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3); padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--rule-soft); margin-bottom: 0.9rem;
+}
+.p-block p { margin: 0 0 0.8rem; font-size: 0.98rem; }
+.p-block p:last-child { margin-bottom: 0; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.chain li { font-size: 0.95rem; padding-left: 1.1rem; position: relative; color: var(--ink-2); min-width: 0; }
+.chain li::before {
+  content: ""; position: absolute; left: 0; top: 0.68em;
+  width: 5px; height: 1px; background: var(--accent);
+}
+.chain li b { color: var(--ink); font-weight: 600; }
+
+.tbl-scroll { overflow-x: auto; border: 1px solid var(--rule-soft); }
+table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 0.78rem; }
+caption {
+  caption-side: top; text-align: left; font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 0 0 0.6rem;
+}
+th, td {
+  padding: 0.5rem 0.75rem; text-align: right; font-variant-numeric: tabular-nums;
+  white-space: nowrap; border-bottom: 1px solid var(--rule-soft);
+}
+th {
+  font-weight: 600; font-size: 0.64rem; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--ink-3); background: var(--surface-2);
+}
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 8.5rem; }
+tbody tr:last-child td { border-bottom: none; }
+td.pos { color: var(--pos); }
+td.neg { color: var(--neg); }
+tr.hi td { background: var(--accent-wash); font-weight: 600; color: var(--ink); }
+
+.limit {
+  margin-top: 0.3rem; padding: 0.85rem 1rem; background: var(--surface-2);
+  border-left: 2px solid var(--rule); font-size: 0.92rem; color: var(--ink-3);
+}
+.limit b {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-2); display: block; margin-bottom: 0.3rem; font-weight: 600;
+}
+
+/* ---------- figures ---------- */
+.fig {
+  margin: 0; padding: 1.3rem 1.5rem 1.5rem; border-top: 1px solid var(--rule-soft);
+  background: var(--surface-2);
+}
+.p-figs { display: grid; }
+.fig + .fig { border-top: 1px solid var(--rule); }
+.fig figcaption { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; align-items: baseline; margin-bottom: 0.3rem; }
+.fig-n {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--c2); flex: none;
+}
+.fig-t { font-weight: 600; font-size: 1rem; color: var(--ink); }
+.fig-legend {
+  display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; align-items: center;
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.04em;
+  color: var(--ink-2); margin: 0.55rem 0 0.9rem;
+}
+.fig-legend span.lg { display: inline-flex; align-items: center; gap: 0.38rem; }
+.sw { width: 11px; height: 11px; border-radius: 2px; flex: none; display: inline-block; }
+.sw-1 { background: var(--c1); }
+.sw-2 { background: var(--c2); }
+.sw-d1 { background: transparent; border: 1.5px dashed var(--c1); border-radius: 2px; }
+.sw-d2 { background: transparent; border: 1.5px dashed var(--c2); border-radius: 2px; }
+.fig svg { display: block; width: 100%; height: auto; max-width: 100%; overflow: visible; }
+.fig-note { margin: 0.9rem 0 0; font-size: 0.86rem; color: var(--ink-3); max-width: 44rem; }
+svg text { font-variant-numeric: tabular-nums; }
+.ax { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+.rl { font-family: var(--body); font-size: 12px; fill: var(--ink-2); }
+.vl { font-family: var(--mono); font-size: 11px; font-weight: 600; fill: var(--ink); }
+.vl-m { font-family: var(--mono); font-size: 11px; font-weight: 500; fill: var(--ink-2); }
+.vl-on { font-family: var(--mono); font-size: 11px; font-weight: 600; fill: var(--on-fill); }
+.nl { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+.gl { stroke: var(--grid); stroke-width: 1; }
+.zl { stroke: var(--rule); stroke-width: 1.5; }
+
+/* ---------- stack ---------- */
+.stack-grid { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (min-width: 760px) { .stack-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .stack-grid { grid-template-columns: repeat(4, 1fr); } }
+.stack-cell { background: var(--surface); padding: 1.25rem 1.3rem; min-width: 0; }
+.stack-cell h3 {
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.stack-cell ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.38rem; }
+.stack-cell li { font-family: var(--mono); font-size: 0.76rem; color: var(--ink-2); }
+
+/* ---------- bridge ---------- */
+.bridge { display: grid; gap: 2rem; }
+@media (min-width: 880px) { .bridge { grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr); gap: 3rem; } }
+.bridge-card { border: 1px solid var(--rule); background: var(--surface); padding: 1.4rem 1.45rem; align-self: start; }
+.bridge-card h3 {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;
+}
+.rail { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.95rem; }
+.rail li { font-size: 0.95rem; color: var(--ink-2); padding-left: 0.95rem; border-left: 1px solid var(--rule); min-width: 0; }
+.rail li b { display: block; color: var(--ink); font-weight: 600; font-size: 0.98rem; }
+
+/* ---------- footer ---------- */
+footer { border-bottom: none; }
+footer > .wrap { padding-block: 3rem 3.4rem; }
+.foot-grid { display: grid; gap: 1.8rem; }
+@media (min-width: 720px) { .foot-grid { grid-template-columns: 1fr auto; align-items: end; } }
+.contact-line { font-family: var(--mono); font-size: 0.82rem; color: var(--ink-2); display: grid; gap: 0.4rem; }
+.contact-line span { user-select: all; }
+.copy-btn {
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent); background: transparent; border: 1px solid var(--rule);
+  padding: 0.5rem 0.85rem; cursor: pointer; justify-self: start; margin-top: 0.35rem;
+}
+.copy-btn:hover { background: var(--accent-wash); }
+.asof { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em; color: var(--ink-3); }
+
+:where(a, button):focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<header class="masthead">
+  <canvas id="paths" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">Quantitative Finance &middot; Portfolio of Work</p>
+    <h1>R. Michael Merritt</h1>
+    <p class="h1-sub">Financial engineering, model risk, and the arithmetic of honest backtests</p>
+    <p class="thesis">Derivative pricing, stochastic modeling, time-series econometrics and machine learning applied to real market data. The through-line is not that the models fit. It is that <strong>each result is reported with the amount of it that survives scrutiny</strong> &mdash; hindsight priced, identification tested, and parameter-free benchmarks left in when they win.</p>
+    <div class="ident">
+      <div><b>Focus</b> Pricing &middot; Risk &middot; Forecasting</div>
+      <div><b>Training</b> MScFE, WorldQuant University</div>
+      <div><b>Based</b> Chicago, IL</div>
+      <div><b>Also</b> Co-Founder &amp; CxTO, Sartori AI</div>
+    </div>
+  </div>
+</header>
+
+<div class="index-bar">
+  <div class="wrap">
+    <nav class="index-scroll" aria-label="Section index">
+      <a href="#orientation">Orientation</a>
+      <a href="#reading">Reading my own results</a>
+      <a href="#capability">Capability</a>
+      <a href="#work">The work</a>
+      <a href="#stack">Methods &amp; stack</a>
+      <a href="#bridge">Operator context</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</div>
+
+<p class="canvas-note wrap">Masthead: Heston paths under Euler discretization with full truncation, simulated from a calibration in this portfolio &mdash; &kappa;&nbsp;0.0261, &theta;&nbsp;0.0274, &sigma;<sub>v</sub>&nbsp;1.2389, &rho;&nbsp;&minus;0.9581, v<sub>0</sub>&nbsp;0.1016.</p>
+
+<section id="orientation">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <h2>What you are looking at</h2>
+    </div>
+    <div class="prose lede">
+      <p>Seven bodies of quantitative work spanning financial data engineering, time-series econometrics, derivative pricing, stochastic modeling and machine learning. They were produced during graduate study in financial engineering and carried out in small teams, as serious quantitative work usually is.</p>
+      <p>What follows is a record of method and judgment rather than a transcript. Every figure was transcribed from the underlying analysis and verified; where a source contradicts itself the figure is omitted rather than reconciled by guesswork, and where a result is weaker than its headline would suggest, the weaker number is the one shown.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="v">7</div><div class="k">Bodies of work</div></div>
+      <div class="stat"><div class="v">141</div><div class="k">Configs tuned</div></div>
+      <div class="stat"><div class="v">36 yr</div><div class="k">Longest sample</div></div>
+      <div class="stat"><div class="v">5,472</div><div class="k">Days modeled</div></div>
+      <div class="stat"><div class="v">300k</div><div class="k">MC paths</div></div>
+      <div class="stat"><div class="v">30+</div><div class="k">Named methods</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="reading">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <h2>Three places where I read my own results against myself</h2>
+    </div>
+    <p class="lede" style="margin-bottom:2rem">Fitting a model is table stakes. The harder skill is estimating how much of a result is real. These three are the clearest evidence of it.</p>
+    <div class="exhibits">
+      <div class="exhibit">
+        <div class="tag">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 17 L10 3 L18 17"/></g><circle cx="10" cy="3" r="2" fill="currentColor"/><path d="M4 13 L16 13" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/></svg>
+          Hindsight, priced
+        </div>
+        <span class="figure">13.08 pp</span>
+        <p>I built an oracle-gap rank statistic to measure what peeking at the test window would have been worth. Selecting hyperparameters with hindsight gained <b>2.65 score points</b> on average across five model families and <b>13.08 points of R&sup2;<sub>OS</sub></b> on the regression tree.</p>
+        <p>The conclusion follows directly: any backtest that selects and evaluates on the same sample has to deduct that amount before it reports anything.</p>
+      </div>
+      <div class="exhibit">
+        <div class="tag">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="10" r="5"/><circle cx="13" cy="10" r="5"/></g></svg>
+          Identification, tested
+        </div>
+        <span class="figure">Same MSE, different &kappa;, &theta;</span>
+        <p>A Heston calibration converged to MSE 0.2457. Re-running the fit through an independent Carr&ndash;Madan Fourier engine reproduced <b>identical error from a different parameter set</b>.</p>
+        <p>That is not two successes. It is one underdetermined problem, and the analysis says so. The Bates extension &mdash; eight parameters against five strikes &mdash; was flagged as underdetermined on the same grounds.</p>
+      </div>
+      <div class="exhibit">
+        <div class="tag">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 16 C8 15, 12 6, 18 4" fill="none" stroke="currentColor" stroke-width="1.3"/><g fill="currentColor"><circle cx="5" cy="14.6" r="1.2"/><circle cx="10" cy="10.6" r="1.2"/><circle cx="15" cy="5.6" r="1.2"/></g><path d="M3 3 L17 17" stroke="currentColor" stroke-width="1.3" opacity="0.45"/></svg>
+          A good fit, distrusted
+        </div>
+        <span class="figure">R&sup2; = 0.999</span>
+        <p>A log consumption&ndash;income regression returned R&sup2; of 0.999 and a Durbin&ndash;Watson of 0.244. I reported the R&sup2; as a <b>spurious-regression warning rather than a result</b>, and defended the low DW as expected under cointegration.</p>
+        <p>The error-correction term then came back at &minus;0.0473 with p&nbsp;=&nbsp;0.082. I named that a real problem with the model instead of rounding it into significance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="capability">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <h2>Capability</h2>
+    </div>
+    <div class="cap-grid">
+      <div class="cap-col">
+        <h3>The visible toolkit</h3>
+        <ul class="cap-list">
+          <li><span class="n">Derivative pricing</span><span class="d">CRR binomial and trinomial lattices, convergence behaviour, European / American / Asian / barrier payoffs, Longstaff&ndash;Schwartz least-squares Monte Carlo, Greeks by bump-and-reprice.</span></li>
+          <li><span class="n">Stochastic volatility and jumps</span><span class="d">Heston calibration and simulation, Merton jump-diffusion with correct drift compensation, Bates, CIR short-rate fitting, Carr&ndash;Madan Fourier pricing as an independent check.</span></li>
+          <li><span class="n">Time-series econometrics</span><span class="d">ADF unit-root testing with lag selection, Engle&ndash;Granger cointegration, error-correction models, VECM with rank restriction, impulse response analysis, multicollinearity diagnostics.</span></li>
+          <li><span class="n">Machine learning in finance</span><span class="d">Ridge with random Fourier features, PCR, CART, LDA with shrinkage, RBF SVM, MLP, k-means, and bagging / random forest / gradient boosting / stacking ensembles.</span></li>
+          <li><span class="n">Financial data engineering</span><span class="d">Nelson&ndash;Siegel and cubic-spline curve construction, PCA and SVD on yield and equity covariance structures, data-quality taxonomy applied to real disclosure.</span></li>
+        </ul>
+      </div>
+      <div class="cap-col">
+        <h3>What actually transfers</h3>
+        <ul class="cap-list">
+          <li><span class="n">Validation design under serial dependence</span><span class="d">Rejected <em>k</em>-fold as invalid for dependent data and built expanding-window, one-step-ahead refit schemes with per-year folds so that standard errors exist at all. Scalers, PCA and <em>k</em>-means refit inside the loop, never on the full sample.</span></li>
+          <li><span class="n">Inference for nested forecasts</span><span class="d">Clark&ndash;West and Pesaran&ndash;Timmermann implemented by hand rather than taken from a library, plus circular block bootstrap with a six-month block to respect autocorrelation when comparing Sharpe ratios.</span></li>
+          <li><span class="n">Discretization control</span><span class="d">Full-truncation Euler for the Heston variance process, the &minus;&lambda;k compensator in the Merton SDE, Feller conditions computed rather than cited, and Monte Carlo discrepancies expressed in standard errors instead of absolute terms.</span></li>
+          <li><span class="n">Multiple-testing accounting</span><span class="d">Configuration counts reported alongside results &mdash; roughly 90 configurations and 12 strategies on one 63-month sample in one study, 141 configurations in another &mdash; so a reader can discount the best result appropriately.</span></li>
+          <li><span class="n">Benchmark discipline</span><span class="d">A parameter-free ten-month moving-average rule beat every tuned model in two separate studies. It stayed in the write-up both times, because leaving it out would overstate the position.</span></li>
+          <li><span class="n">Regularization as a prior, not a knob</span><span class="d">Selection by the one-standard-error rule with an explicit complexity ordering per family, which changed the chosen model in four of seven cases and produced a better out-of-sample Sharpe than the arg-max choice.</span></li>
+          <li><span class="n">Reproducibility</span><span class="d">Fixed seeds, local data caches with documented synthetic fallback, pinned library versions, CSV and JSON result exports, recorded runtimes.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <h2>The work</h2>
+    </div>
+
+    <!-- ===== 1 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="4" cy="4" r="1.3"/><circle cx="10" cy="4" r="1.3"/><circle cx="16" cy="4" r="1.3"/><circle cx="4" cy="10" r="1.3"/><circle cx="16" cy="10" r="1.3"/><circle cx="4" cy="16" r="1.3"/><circle cx="10" cy="16" r="1.3"/><circle cx="16" cy="16" r="1.3"/></g><circle cx="10" cy="10" r="2.6" fill="currentColor"/></svg>
+          <span class="dom">Machine learning</span><span>Model selection</span><span>431 monthly observations, 1990&ndash;2025</span>
+        </div>
+        <h3 class="p-title">Hyperparameter optimization under serial dependence</h3>
+        <p class="p-q">Library defaults are tuned for independent data. Equity return panels are not independent. How much of a model's apparent skill is really a tuning artifact &mdash; and how much would you gain by cheating?</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Target</b> 431 monthly observations built from daily index, volatility and Treasury series, with 12 month-end predictors.</li>
+            <li><b>Split</b> 119-month training seed, 96-month validation in 8 annual folds, 216-month held-out test.</li>
+            <li><b>Scheme</b> expanding window, one-step-ahead monthly refit, citing Bergmeir on why <em>k</em>-fold is inadmissible here.</li>
+            <li><b>Search</b> 141 configurations across 7 families; grid, random, and Gaussian-process Bayesian optimization compared under a 20-evaluation budget.</li>
+            <li><b>Selection</b> one-standard-error rule with a stated complexity ordering per family.</li>
+          </ul>
+          <p style="margin-top:1rem;color:var(--ink-2)">Every selected configuration landed at or near maximum regularization &mdash; ridge &alpha;&nbsp;=&nbsp;10,000, a depth-1 tree, PCR on a single component, an 8&times;4 network with &alpha;&nbsp;=&nbsp;100. The data supports far less model than the defaults assume.</p>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Tuning effect, 216-month out-of-sample window</caption>
+              <thead><tr><th>Measure</th><th>Defaults</th><th>Tuned</th></tr></thead>
+              <tbody>
+                <tr><td>R&sup2;<sub>OS</sub>, 4 forecast families</td><td class="neg">&minus;137.8%</td><td class="neg">&minus;5.1%</td></tr>
+                <tr><td>R&sup2;<sub>OS</sub>, neural network</td><td class="neg">&minus;392.7%</td><td class="neg">&minus;4.5%</td></tr>
+                <tr><td>R&sup2;<sub>OS</sub>, regression tree</td><td class="neg">&minus;98.5%</td><td class="neg">&minus;13.3%</td></tr>
+                <tr class="hi"><td>Mean Sharpe, 7 families</td><td>0.54</td><td>0.70</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">The one-standard-error rule returned a Sharpe of <b>0.70 against 0.63</b> for the arg-max selection. Bayesian search matched or beat the alternatives in five of seven families, with the right boundary drawn on that claim: in single-hyperparameter spaces all three optimizers converge, so optimizer choice only matters under a constrained budget.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            No tuned model achieves a positive R&sup2;<sub>OS</sub>. A parameter-free ten-month moving-average rule returns a Sharpe of 0.79 with a 21% drawdown and beats every configuration in the study. That benchmark is in the analysis, not omitted from it.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 1</span><span class="fig-t">Tuning recovers most of the loss, and none of the skill</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-2"></span>Library defaults</span>
+            <span class="lg"><span class="sw sw-1"></span>Tuned</span>
+          </div>
+          <svg viewBox="0 0 620 214" role="img" aria-label="Out-of-sample R-squared before and after tuning. Four forecast families move from minus 137.8 percent to minus 5.1 percent, the neural network from minus 392.7 to minus 4.5, and the regression tree from minus 98.5 to minus 13.3.">
+            <g class="gl">
+              <line x1="150" y1="30" x2="150" y2="182"/>
+              <line x1="262.5" y1="30" x2="262.5" y2="182"/>
+              <line x1="375" y1="30" x2="375" y2="182"/>
+              <line x1="487.5" y1="30" x2="487.5" y2="182"/>
+            </g>
+            <line class="zl" x1="600" y1="30" x2="600" y2="182"/>
+            <g class="ax" text-anchor="middle">
+              <text x="150" y="198">&minus;400</text>
+              <text x="262.5" y="198">&minus;300</text>
+              <text x="375" y="198">&minus;200</text>
+              <text x="487.5" y="198">&minus;100</text>
+              <text x="600" y="198">0</text>
+            </g>
+            <text class="ax" x="600" y="20" text-anchor="end">R&sup2; out-of-sample, %</text>
+
+            <text class="rl" x="120" y="50" text-anchor="end">Four forecast</text>
+            <text class="rl" x="120" y="64" text-anchor="end">families</text>
+            <rect x="445" y="40" width="155" height="14" rx="4" fill="var(--c2)"/>
+            <text class="vl-on" x="453" y="51">&minus;137.8</text>
+            <rect x="594.3" y="56" width="5.7" height="14" rx="2" fill="var(--c1)"/>
+            <text class="vl" x="586.3" y="67" text-anchor="end">&minus;5.1</text>
+
+            <text class="rl" x="120" y="106" text-anchor="end">Neural network</text>
+            <rect x="158.2" y="92" width="441.8" height="14" rx="4" fill="var(--c2)"/>
+            <text class="vl-on" x="166.2" y="103">&minus;392.7</text>
+            <rect x="594.9" y="108" width="5.1" height="14" rx="2" fill="var(--c1)"/>
+            <text class="vl" x="586.9" y="119" text-anchor="end">&minus;4.5</text>
+
+            <text class="rl" x="120" y="158" text-anchor="end">Regression tree</text>
+            <rect x="489.2" y="144" width="110.8" height="14" rx="4" fill="var(--c2)"/>
+            <text class="vl-on" x="497.2" y="155">&minus;98.5</text>
+            <rect x="585" y="160" width="15" height="14" rx="4" fill="var(--c1)"/>
+            <text class="vl" x="577" y="171" text-anchor="end">&minus;13.3</text>
+          </svg>
+          <p class="fig-note">Zero is the right edge: every bar is a negative R&sup2;, meaning the model forecasts worse than the historical mean. Tuning shrinks the damage by an order of magnitude and still does not cross zero. The honest reading is that careful tuning buys you a model that has stopped hurting, not one that has started helping.</p>
+        </figure>
+
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 2</span><span class="fig-t">The validation scheme that makes the numbers admissible</span></figcaption>
+          <svg viewBox="0 0 620 144" role="img" aria-label="Timeline from 1990 to 2025 divided into a 119-month training seed, a 96-month validation block of eight annual folds, and a 216-month held-out test window beginning in 2008.">
+            <g class="ax">
+              <text x="40" y="38">1990</text>
+              <text x="195.6" y="38" text-anchor="middle">2000</text>
+              <text x="320" y="38" text-anchor="middle">2008</text>
+              <text x="600" y="38" text-anchor="end">2025</text>
+            </g>
+            <rect x="40" y="50" width="153.6" height="34" rx="2" fill="var(--c2)" opacity="0.35"/>
+            <rect x="197.6" y="50" width="118.4" height="34" rx="2" fill="var(--c2)"/>
+            <rect x="324" y="50" width="276" height="34" rx="2" fill="var(--c1)"/>
+            <g stroke="var(--surface-2)" stroke-width="1.5" opacity="0.9">
+              <line x1="212.4" y1="50" x2="212.4" y2="84"/>
+              <line x1="227.2" y1="50" x2="227.2" y2="84"/>
+              <line x1="242.0" y1="50" x2="242.0" y2="84"/>
+              <line x1="256.8" y1="50" x2="256.8" y2="84"/>
+              <line x1="271.6" y1="50" x2="271.6" y2="84"/>
+              <line x1="286.4" y1="50" x2="286.4" y2="84"/>
+              <line x1="301.2" y1="50" x2="301.2" y2="84"/>
+            </g>
+            <g class="nl">
+              <text x="40" y="102">Training seed &middot; 119 mo</text>
+              <text x="197.6" y="102">Validation &middot; 96 mo</text>
+              <text x="324" y="102">Held out &middot; 216 mo</text>
+              <text x="197.6" y="120">8 annual folds</text>
+            </g>
+          </svg>
+          <p class="fig-note">The eight ticks inside the middle block are the annual validation folds. Splitting the validation period into folds rather than treating it as one block is what makes a standard error exist for the selection criterion &mdash; which is what the one-standard-error rule needs to operate on. Scalers and every unsupervised step are refit inside the loop, so no fold ever precedes its own training data and nothing from the held-out window leaks backward.</p>
+        </figure>
+
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 3</span><span class="fig-t">Informed search earns its keep only under a budget</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-1"></span>Informed search</span>
+            <span class="lg"><span class="sw sw-2"></span>Random search</span>
+          </div>
+          <svg viewBox="0 0 620 176" role="img" aria-label="Mean shortfall from the full-grid optimum under a twenty-evaluation budget. Grid search 0.461, Bayesian optimization 0.493, random search 1.292.">
+            <g class="gl">
+              <line x1="332.9" y1="26" x2="332.9" y2="140"/>
+              <line x1="475.7" y1="26" x2="475.7" y2="140"/>
+            </g>
+            <line class="zl" x1="190" y1="26" x2="190" y2="140"/>
+            <g class="ax" text-anchor="middle">
+              <text x="190" y="158">0</text>
+              <text x="332.9" y="158">0.5</text>
+              <text x="475.7" y="158">1.0</text>
+            </g>
+            <text class="ax" x="190" y="18">Mean shortfall from full-grid optimum &mdash; lower is better</text>
+
+            <text class="rl" x="180" y="48" text-anchor="end">Grid</text>
+            <rect x="190" y="36" width="131.7" height="20" rx="4" fill="var(--c1)"/>
+            <text class="vl" x="329.7" y="50">0.461</text>
+
+            <text class="rl" x="180" y="82" text-anchor="end">Bayesian</text>
+            <rect x="190" y="70" width="140.8" height="20" rx="4" fill="var(--c1)"/>
+            <text class="vl" x="338.8" y="84">0.493</text>
+
+            <text class="rl" x="180" y="116" text-anchor="end">Random</text>
+            <rect x="190" y="104" width="369.1" height="20" rx="4" fill="var(--c2)"/>
+            <text class="vl-on" x="198" y="118">1.292</text>
+          </svg>
+          <p class="fig-note">Random search is nearly three times worse than either informed method, which is the unambiguous finding. The more careful reading is the gap between the first two bars: on mean shortfall, exhaustive grid search edges Bayesian optimization, while Bayesian matches or beats the field in five of the seven model families. Both are true, and the reconciliation is that most of these families have a single hyperparameter &mdash; in a one-dimensional space every optimizer converges, so the choice of optimizer only pays when the budget binds.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 2 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="currentColor"><rect x="1" y="7" width="4" height="6" rx="1"/><rect x="11" y="7" width="4" height="6" rx="1"/></g><g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55"><rect x="6.5" y="7" width="3.5" height="6" rx="1"/><rect x="16" y="7" width="3" height="6" rx="1"/></g></svg>
+          <span class="dom">Regime modeling</span><span>Hidden Markov models</span><span>5,472 trading days, 2004&ndash;2026</span>
+        </div>
+        <h3 class="p-title">Regime detection and tactical asset rotation</h3>
+        <p class="p-q">Can a hidden Markov model fitted to volatility log-changes identify market states cleanly enough to drive an allocation rule &mdash; and does the edge survive when you change the number of states?</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Data</b> long-duration Treasuries, gold, broad equity and the volatility index over 5,472 trading days.</li>
+            <li><b>Model</b> two-state Gaussian hidden Markov model on volatility log-changes, fitted by expectation&ndash;maximization with 7 random restarts.</li>
+            <li><b>Finding</b> the states separate on <em>dispersion</em>, &sigma;&nbsp;0.048 against 0.124, not on drift &mdash; a volatility regime, not a direction call.</li>
+            <li><b>Rule</b> full equity exposure in the calm state, full Treasury exposure in the stressed state, applied with a one-day lag to avoid look-ahead.</li>
+            <li><b>Selection</b> two states chosen over the BIC-optimal four on tradeability and stability, with the override argued rather than assumed.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Full-sample rotation against buy-and-hold</caption>
+              <thead><tr><th></th><th>Rotation</th><th>Equity</th></tr></thead>
+              <tbody>
+                <tr><td>Cumulative</td><td class="pos">8,490%</td><td>867%</td></tr>
+                <tr><td>Annualized</td><td class="pos">22.8%</td><td>11.0%</td></tr>
+                <tr><td>Volatility</td><td>15.2%</td><td>18.9%</td></tr>
+                <tr class="hi"><td>Sharpe</td><td>1.50</td><td>0.58</td></tr>
+                <tr><td>Max drawdown</td><td class="pos">&minus;30.4%</td><td class="neg">&minus;55.2%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">Re-fitted on a training sample ending in 2015 and evaluated forward, the rule returns a Sharpe of <b>1.71 against the benchmark's 0.86</b> &mdash; the strongest out-of-sample result in this portfolio.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            The result is fragile in the state count. Moving to three states collapses the Sharpe from 1.50 to 0.22. That sensitivity damages the thesis and is reported rather than suppressed, which is the correct treatment: it tells a reader the edge depends on a modeling choice, not only on the data.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 4</span><span class="fig-t">A real edge, and the single choice it rests on</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-1"></span>Regime rotation</span>
+            <span class="lg"><span class="sw sw-2"></span>Equity buy-and-hold</span>
+            <span class="lg"><span class="sw sw-d1"></span>Fragility check</span>
+          </div>
+          <svg viewBox="0 0 620 234" role="img" aria-label="Sharpe ratios. Rotation out-of-sample 1.71, rotation full sample 1.50, equity out-of-sample 0.86, equity full sample 0.58, and the rotation refitted with three states 0.22.">
+            <g class="gl">
+              <line x1="311.1" y1="26" x2="311.1" y2="196"/>
+              <line x1="422.2" y1="26" x2="422.2" y2="196"/>
+              <line x1="533.3" y1="26" x2="533.3" y2="196"/>
+            </g>
+            <line class="zl" x1="200" y1="26" x2="200" y2="196"/>
+            <g class="ax" text-anchor="middle">
+              <text x="200" y="212">0</text>
+              <text x="311.1" y="212">0.5</text>
+              <text x="422.2" y="212">1.0</text>
+              <text x="533.3" y="212">1.5</text>
+            </g>
+            <text class="ax" x="200" y="18">Sharpe ratio</text>
+
+            <text class="rl" x="190" y="48" text-anchor="end">Rotation, out-of-sample</text>
+            <rect x="200" y="36" width="380" height="18" rx="4" fill="var(--c1)"/>
+            <text class="vl" x="588" y="50">1.71</text>
+
+            <text class="rl" x="190" y="78" text-anchor="end">Rotation, full sample</text>
+            <rect x="200" y="66" width="333.3" height="18" rx="4" fill="var(--c1)"/>
+            <text class="vl" x="541.3" y="80">1.50</text>
+
+            <text class="rl" x="190" y="108" text-anchor="end">Equity, out-of-sample</text>
+            <rect x="200" y="96" width="191.1" height="18" rx="4" fill="var(--c2)"/>
+            <text class="vl" x="399.1" y="110">0.86</text>
+
+            <text class="rl" x="190" y="138" text-anchor="end">Equity, full sample</text>
+            <rect x="200" y="126" width="128.9" height="18" rx="4" fill="var(--c2)"/>
+            <text class="vl" x="336.9" y="140">0.58</text>
+
+            <line x1="36" y1="158" x2="600" y2="158" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+            <text class="rl" x="190" y="182" text-anchor="end">Rotation, three states</text>
+            <rect x="200" y="170" width="48.9" height="18" rx="4" fill="none" stroke="var(--c1)" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text class="vl" x="256.9" y="184">0.22</text>
+          </svg>
+          <p class="fig-note">The top four bars are the result. The fifth is the reason to trust the first four less: the same model refitted with three states instead of two gives up almost all of the edge. A strategy whose Sharpe moves from 1.50 to 0.22 on a single discrete modeling decision is a finding about the method, not a tradeable system, and it belongs on the page next to the headline.</p>
+        </figure>
+
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 5</span><span class="fig-t">The two states differ in width, not in direction</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-1"></span>Calm state, &sigma; = 0.048</span>
+            <span class="lg"><span class="sw sw-2"></span>Stressed state, &sigma; = 0.124</span>
+          </div>
+          <svg viewBox="0 0 620 236" role="img" aria-label="Two fitted normal densities for daily volatility log-changes, both centred on zero. The calm state is narrow with standard deviation 0.048; the stressed state is more than twice as wide at 0.124.">
+            <g transform="translate(50,26)">
+              <g class="gl">
+                <line x1="260" y1="0" x2="260" y2="150"/>
+              </g>
+              <polyline fill="none" stroke="var(--c2)" stroke-width="2.2" points="0.0,149.7 7.4,149.6 14.9,149.4 22.3,149.2 29.7,149.0 37.1,148.7 44.6,148.4 52.0,147.9 59.4,147.4 66.9,146.7 74.3,145.9 81.7,145.0 89.1,143.9 96.6,142.6 104.0,141.1 111.4,139.4 118.9,137.5 126.3,135.3 133.7,133.0 141.1,130.4 148.6,127.7 156.0,124.7 163.4,121.7 170.9,118.5 178.3,115.3 185.7,112.0 193.1,108.8 200.6,105.8 208.0,102.8 215.4,100.2 222.9,97.8 230.3,95.8 237.7,94.1 245.1,92.9 252.6,92.2 260.0,91.9 267.4,92.2 274.9,92.9 282.3,94.1 289.7,95.8 297.1,97.8 304.6,100.2 312.0,102.8 319.4,105.8 326.9,108.8 334.3,112.0 341.7,115.3 349.1,118.5 356.6,121.7 364.0,124.7 371.4,127.7 378.9,130.4 386.3,133.0 393.7,135.3 401.1,137.5 408.6,139.4 416.0,141.1 423.4,142.6 430.9,143.9 438.3,145.0 445.7,145.9 453.1,146.7 460.6,147.4 468.0,147.9 475.4,148.4 482.9,148.7 490.3,149.0 497.7,149.2 505.1,149.4 512.6,149.6 520.0,149.7"/>
+              <polyline fill="none" stroke="var(--c1)" stroke-width="2.2" points="0.0,150.0 37.1,150.0 74.3,150.0 111.4,150.0 148.6,149.7 163.4,148.8 174.6,146.5 185.7,141.2 196.9,130.6 208.0,112.6 219.1,86.4 230.3,54.7 241.4,24.4 248.9,9.3 256.3,1.1 260.0,0.0 263.7,1.1 271.1,9.3 278.6,24.4 289.7,54.7 300.9,86.4 312.0,112.6 323.1,130.6 334.3,141.2 345.4,146.5 356.6,148.8 371.4,149.7 408.6,150.0 445.7,150.0 482.9,150.0 520.0,150.0"/>
+              <line class="zl" x1="0" y1="150" x2="520" y2="150"/>
+              <g class="ax" text-anchor="middle">
+                <text x="0" y="168">&minus;0.4</text>
+                <text x="130" y="168">&minus;0.2</text>
+                <text x="260" y="168">0</text>
+                <text x="390" y="168">0.2</text>
+                <text x="520" y="168">0.4</text>
+              </g>
+              <text class="ax" x="0" y="-10">Fitted density of daily volatility log-change</text>
+
+              <rect x="228.8" y="182" width="62.4" height="7" rx="3.5" fill="var(--c1)"/>
+              <text class="vl" x="300" y="189">&plusmn;1&sigma; = 0.048</text>
+              <rect x="179.4" y="198" width="161.2" height="7" rx="3.5" fill="var(--c2)"/>
+              <text class="vl" x="350" y="205">&plusmn;1&sigma; = 0.124</text>
+            </g>
+          </svg>
+          <p class="fig-note">Both states are centred on zero &mdash; the model finds no difference in expected direction between them. What separates them is width: the stressed state is 2.6 times as dispersed, and the bars beneath the axis show the two one-sigma spans to scale. That is why the allocation rule is defensible as a risk rule rather than a forecast. It does not claim to know which way the market will move, only how violently, and switching from equity to Treasuries on that signal is a statement about variance rather than a bet on return.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 3 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><polyline points="1,14 4,9 6,12 9,5 12,10 15,3 19,7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <span class="dom">Stochastic modeling</span><span>Calibration &amp; exotic pricing</span><span>300,000 Monte Carlo paths</span>
+        </div>
+        <h3 class="p-title">Stochastic volatility calibration and exotic pricing</h3>
+        <p class="p-q">Calibrate Heston, Bates and CIR to live market data, price a path-dependent payoff under the fitted dynamics, and verify the Monte Carlo engine against an independent transform method.</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Heston</b> calibrated to a 15-day equity option slice, S<sub>0</sub>&nbsp;=&nbsp;$232.90, r&nbsp;=&nbsp;1.50%.</li>
+            <li><b>Simulation</b> Euler discretization with full truncation on the variance process, 200,000 antithetic paths.</li>
+            <li><b>Payoff</b> 20-day arithmetic-average Asian call, with the spot included in the averaging set.</li>
+            <li><b>Validation</b> an independent Carr&ndash;Madan Fourier engine run against the same calibration; a 70-day 95%-moneyness put priced both ways.</li>
+            <li><b>CIR</b> fitted to a money-market curve across five tenors, then simulated 100,000 paths over 250 days.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Calibrated parameters and prices</caption>
+              <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td>Heston &kappa; / &theta; / &sigma;<sub>v</sub></td><td>0.0261 / 0.0274 / 1.2389</td></tr>
+                <tr><td>Heston &rho; / v<sub>0</sub></td><td>&minus;0.9581 / 0.1016</td></tr>
+                <tr><td>Calibration MSE</td><td>0.2457</td></tr>
+                <tr class="hi"><td>Asian call</td><td>$4.7806 &plusmn; 0.0128</td></tr>
+                <tr><td>95% CI</td><td>[4.755, 4.806]</td></tr>
+                <tr><td>With 4% fee</td><td>$4.9718</td></tr>
+                <tr><td>Vanilla reference</td><td>$8.09</td></tr>
+                <tr><td>CIR &kappa; / &theta; / &sigma;</td><td>1.784 / 4.473% / 0.400</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">The Asian option prices at <b>0.59&times; the vanilla</b>, the expected discount from averaging. The Monte&nbsp;Carlo and Fourier put prices differ by <b>0.8 standard errors</b> &mdash; stated as a tolerance in SE units, which is the only form in which such a comparison means anything.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            The Feller condition fails on the Heston fit, 0.001 against 1.54, which is precisely why full truncation was required rather than optional. On the CIR fit, 2&kappa;&theta;&nbsp;=&nbsp;0.1596 against &sigma;&sup2;&nbsp;=&nbsp;0.1600 &mdash; marginally violated, and the two round to the same three decimals. The twelve-month forward rate carries a 95% interval of [0.08%, 12.1%], wide enough that the point estimate should not be used on its own.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 6</span><span class="fig-t">Two engines, one price &mdash; agreement stated in standard errors</span></figcaption>
+          <svg viewBox="0 0 620 176" role="img" aria-label="A price axis from 9.24 to 9.32 showing the Fourier transform price at 9.2638 and the Monte Carlo price at 9.2967, a gap of 0.0329 or about 0.8 standard errors.">
+            <line class="zl" x1="70" y1="104" x2="580" y2="104"/>
+            <g class="gl">
+              <line x1="70" y1="98" x2="70" y2="110"/>
+              <line x1="197.5" y1="98" x2="197.5" y2="110"/>
+              <line x1="325" y1="98" x2="325" y2="110"/>
+              <line x1="452.5" y1="98" x2="452.5" y2="110"/>
+              <line x1="580" y1="98" x2="580" y2="110"/>
+            </g>
+            <g class="ax" text-anchor="middle">
+              <text x="70" y="126">9.24</text>
+              <text x="197.5" y="126">9.26</text>
+              <text x="325" y="126">9.28</text>
+              <text x="452.5" y="126">9.30</text>
+              <text x="580" y="126">9.32</text>
+            </g>
+            <text class="ax" x="70" y="146">Put price, $</text>
+
+            <line x1="238.1" y1="60" x2="238.1" y2="104" stroke="var(--c2)" stroke-width="2"/>
+            <circle cx="238.1" cy="104" r="5.5" fill="var(--c2)" stroke="var(--surface-2)" stroke-width="2"/>
+            <text class="vl" x="238.1" y="52" text-anchor="middle">9.2638</text>
+            <text class="nl" x="238.1" y="38" text-anchor="middle">Fourier</text>
+
+            <line x1="447.9" y1="60" x2="447.9" y2="104" stroke="var(--c1)" stroke-width="2"/>
+            <circle cx="447.9" cy="104" r="5.5" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+            <text class="vl" x="447.9" y="52" text-anchor="middle">9.2967</text>
+            <text class="nl" x="447.9" y="38" text-anchor="middle">Monte Carlo</text>
+
+            <path d="M238.1 82 L447.9 82" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+            <text class="vl" x="343" y="76" text-anchor="middle">gap 0.0329 &asymp; 0.8 SE</text>
+          </svg>
+          <p class="fig-note">Expressing the discrepancy in standard errors rather than cents is the whole point. Three decimal places of agreement is meaningless on its own &mdash; it is only informative once you know the simulation's own noise floor, and 0.8 SE says the two engines agree to within sampling error. The same discipline caught the calibration problem: identical fit error from two different parameter sets means the inverse problem is underdetermined.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 4 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 15 C7 13, 13 7, 19 4"/><path d="M1 18 C7 15, 13 10, 19 8" opacity="0.5"/></g></svg>
+          <span class="dom">Econometrics</span><span>Cointegration &amp; error correction</span><span>203 quarters, 1959&ndash;2009</span>
+        </div>
+        <h3 class="p-title">Non-stationarity, cointegration and error correction</h3>
+        <p class="p-q">Two macro series trend together for fifty years. Is that a long-run equilibrium relationship or a spurious regression &mdash; and if it is real, how fast does the system correct?</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Data</b> US consumption and output, 203 quarterly observations, in logs and first differences.</li>
+            <li><b>Order of integration</b> augmented Dickey&ndash;Fuller in levels and differences with lag selection; both series I(1).</li>
+            <li><b>Cointegration</b> Engle&ndash;Granger on the OLS residual against tabulated critical values.</li>
+            <li><b>Dynamics</b> error-correction model, then a vector error-correction model at rank 1 with cointegrating vector and adjustment loadings, plus 20-quarter impulse responses.</li>
+            <li><b>Diagnostics</b> residual inspection, structural-stability reasoning, and an explicit argument against fitting GARCH at this sample size.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Unit root and cointegration tests</caption>
+              <thead><tr><th>Test</th><th>Statistic</th><th>p</th></tr></thead>
+              <tbody>
+                <tr><td>ADF, log consumption</td><td>&minus;1.6449</td><td>0.460</td></tr>
+                <tr><td>ADF, log output</td><td>&minus;1.7959</td><td>0.383</td></tr>
+                <tr><td>ADF, &Delta;log consumption</td><td>&minus;4.9920</td><td>2.3e&minus;5</td></tr>
+                <tr><td>ADF, &Delta;log output</td><td>&minus;6.9729</td><td>8.6e&minus;10</td></tr>
+                <tr class="hi"><td>Engle&ndash;Granger</td><td>&minus;3.5351</td><td>0.0294</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbl-scroll" style="margin-top:1.1rem">
+            <table>
+              <caption>Long-run relation and adjustment</caption>
+              <thead><tr><th>Parameter</th><th>Estimate</th><th>t</th></tr></thead>
+              <tbody>
+                <tr><td>Intercept</td><td>&minus;1.0757</td><td>&minus;55.845</td></tr>
+                <tr><td>Log output</td><td>1.0748</td><td>490.625</td></tr>
+                <tr><td>ECM, &Delta;log output</td><td>0.5367</td><td>&mdash;</td></tr>
+                <tr><td>Error-correction term</td><td>&minus;0.0473</td><td>&minus;1.748</td></tr>
+                <tr><td>VECM &beta;</td><td>[1, &minus;1.0823]</td><td>&mdash;</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="limit" style="margin-top:1.1rem">
+            <b>Reported limitation</b>
+            The error-correction term is insignificant at conventional levels (p&nbsp;=&nbsp;0.082), which I identified as a real weakness in the specification rather than a detail. Residual heteroskedasticity clustered in recessions was diagnosed visually after the formal tests passed. GARCH was considered and rejected as inappropriate for 203 quarterly observations; bootstrapped standard errors and Bai&ndash;Perron break testing were proposed as the follow-up.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 7</span><span class="fig-t">Cointegrated at 5%, not at 1% &mdash; where the statistic actually lands</span></figcaption>
+          <svg viewBox="0 0 620 184" role="img" aria-label="The Engle-Granger statistic of minus 3.5351 plotted against critical values of minus 3.0655 at ten percent, minus 3.3665 at five percent and minus 3.9515 at one percent. The statistic falls between the five percent and one percent thresholds.">
+            <defs>
+              <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <rect width="6" height="6" fill="var(--c2-wash)"/>
+                <line x1="0" y1="0" x2="0" y2="6" stroke="var(--c2)" stroke-width="1.2" opacity="0.45"/>
+              </pattern>
+            </defs>
+            <rect x="60" y="62" width="196.3" height="34" fill="url(#hatch)"/>
+            <line class="zl" x1="60" y1="96" x2="580" y2="96"/>
+            <g class="gl">
+              <line x1="60" y1="90" x2="60" y2="102"/>
+              <line x1="190" y1="90" x2="190" y2="102"/>
+              <line x1="320" y1="90" x2="320" y2="102"/>
+              <line x1="450" y1="90" x2="450" y2="102"/>
+              <line x1="580" y1="90" x2="580" y2="102"/>
+            </g>
+            <g class="ax" text-anchor="middle">
+              <text x="60" y="118">&minus;4.2</text>
+              <text x="190" y="118">&minus;3.8</text>
+              <text x="320" y="118">&minus;3.4</text>
+              <text x="450" y="118">&minus;3.0</text>
+              <text x="580" y="118">&minus;2.6</text>
+            </g>
+            <text class="ax" x="60" y="138">ADF-type test statistic &mdash; more negative is stronger evidence</text>
+
+            <line x1="140.9" y1="56" x2="140.9" y2="102" stroke="var(--c2)" stroke-width="2"/>
+            <text class="nl" x="140.9" y="48" text-anchor="middle">1%</text>
+            <text class="vl-m" x="140.9" y="34" text-anchor="middle">&minus;3.9515</text>
+
+            <line x1="331.4" y1="56" x2="331.4" y2="102" stroke="var(--c2)" stroke-width="2"/>
+            <text class="nl" x="331.4" y="48" text-anchor="middle">5%</text>
+            <text class="vl-m" x="331.4" y="34" text-anchor="middle">&minus;3.3665</text>
+
+            <line x1="429.1" y1="56" x2="429.1" y2="102" stroke="var(--c2)" stroke-width="2"/>
+            <text class="nl" x="429.1" y="48" text-anchor="middle">10%</text>
+            <text class="vl-m" x="429.1" y="34" text-anchor="middle">&minus;3.0655</text>
+
+            <circle cx="256.3" cy="96" r="7" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2.5"/>
+            <line x1="256.3" y1="96" x2="256.3" y2="160" stroke="var(--c1)" stroke-width="2"/>
+            <text class="vl" x="256.3" y="176" text-anchor="middle">&minus;3.5351 &mdash; the statistic</text>
+          </svg>
+          <p class="fig-note">The hatched band is the region where the null of no cointegration would survive at the 1% level. The statistic sits inside it: past the 5% threshold, short of the 1%. Reporting that as "cointegrated at 5% but not at 1%" rather than simply "cointegrated" is the difference between reporting a test and reporting a conclusion &mdash; and it is why the weak error-correction term that follows is a consistent finding rather than a contradiction.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 5 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.3" fill="none"><path d="M10 6 L4 13"/><path d="M10 6 L16 13"/></g><g fill="currentColor"><circle cx="10" cy="4.5" r="2"/><circle cx="4" cy="15" r="2"/><circle cx="16" cy="15" r="2"/></g></svg>
+          <span class="dom">Machine learning</span><span>Return forecasting</span><span>123 months through the 2008 crisis</span>
+        </div>
+        <h3 class="p-title">Return forecasting across seven model families</h3>
+        <p class="p-q">Can any of seven machine learning families forecast next-month equity excess return well enough to beat the historical average and support a timing rule?</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Data</b> 2,850 trading days reduced to 123 monthly targets with 12 engineered predictors.</li>
+            <li><b>Split</b> 24-month training, 36-month walk-forward validation, 63-month out-of-sample window spanning the financial crisis.</li>
+            <li><b>Models</b> ridge with random Fourier features expanding 6 predictors to 768, <em>k</em>-means, PCR, CART, shrinkage LDA, RBF SVM, MLP across 5 seeds, and a six-model majority vote.</li>
+            <li><b>Inference</b> Clark&ndash;West and Pesaran&ndash;Timmermann hand-implemented; circular block bootstrap, block length 6, 2,000 replications.</li>
+            <li><b>Leakage control</b> scalers, PCA and <em>k</em>-means refit inside the walk-forward loop; short-rate used only as known at time <em>t</em>; full-sample correlations excluded from selection.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Out-of-sample performance, 63-month window</caption>
+              <thead><tr><th>Strategy</th><th>Sharpe</th><th>R&sup2;<sub>OS</sub></th></tr></thead>
+              <tbody>
+                <tr class="hi"><td>10-month MA rule</td><td>0.97</td><td>&mdash;</td></tr>
+                <tr><td>Majority-vote ensemble</td><td>0.67</td><td>&mdash;</td></tr>
+                <tr><td>Regression tree</td><td>0.30</td><td class="neg">&minus;4.14%</td></tr>
+                <tr><td>Ridge</td><td class="neg">&minus;0.58</td><td class="pos">+0.33%</td></tr>
+                <tr><td>PCR</td><td class="neg">&minus;0.10</td><td class="neg">&minus;2.07%</td></tr>
+                <tr><td>SVM</td><td class="neg">&minus;0.16</td><td>&mdash;</td></tr>
+                <tr><td>Buy and hold</td><td>0.00</td><td>&mdash;</td></tr>
+                <tr><td>OLS</td><td>&mdash;</td><td class="neg">&minus;68.19%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">The moving-average rule's Sharpe of 0.97 is the only result significant at 5% under the block bootstrap (p&nbsp;=&nbsp;0.03). The ensemble added 5.1 percentage points of certainty-equivalent return and cut drawdown by 4 points, at p&nbsp;=&nbsp;0.12.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            Ridge's R&sup2;<sub>OS</sub> of +0.33% is statistically indistinguishable from the historical mean (Clark&ndash;West p&nbsp;=&nbsp;0.25) &mdash; it is the mean, reproduced at cost. The analysis states its own multiple-testing exposure plainly: roughly 90 configurations and 12 strategies evaluated on a single 63-month sample, with null results named as the expected outcome rather than an implementation failure.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 8</span><span class="fig-t">Constrained to one split, the tree rediscovered a known tactical rule</span></figcaption>
+          <svg viewBox="0 0 620 226" role="img" aria-label="A decision tree with one split on the ten-month moving average gap at minus 0.007. The true branch holds 48 months averaging minus 1.561 percent per month; the false branch holds 74 months averaging plus 0.689 percent per month.">
+            <rect x="196" y="16" width="228" height="42" rx="3" fill="var(--surface)" stroke="var(--c1)" stroke-width="1.5"/>
+            <text class="vl" x="310" y="35" text-anchor="middle">ma10_gap &le; &minus;0.007</text>
+            <text class="nl" x="310" y="50" text-anchor="middle">single split, depth 1</text>
+
+            <path d="M240 58 L150 92" stroke="var(--c2)" stroke-width="1.5" fill="none"/>
+            <path d="M380 58 L470 92" stroke="var(--c2)" stroke-width="1.5" fill="none"/>
+
+            <rect x="177" y="67" width="36" height="17" rx="8.5" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1"/>
+            <text class="nl" x="195" y="79" text-anchor="middle">true</text>
+            <rect x="405" y="67" width="40" height="17" rx="8.5" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1"/>
+            <text class="nl" x="425" y="79" text-anchor="middle">false</text>
+
+            <rect x="40" y="92" width="220" height="80" rx="3" fill="var(--surface)" stroke="var(--rule)" stroke-width="1"/>
+            <text class="nl" x="56" y="112">Below trend</text>
+            <text x="56" y="138" class="vl" style="font-size:19px" fill="var(--neg)">&minus;1.561%</text>
+            <text class="nl" x="56" y="156">mean return per month &middot; n = 48</text>
+
+            <rect x="360" y="92" width="220" height="80" rx="3" fill="var(--surface)" stroke="var(--rule)" stroke-width="1"/>
+            <text class="nl" x="376" y="112">Above trend</text>
+            <text x="376" y="138" class="vl" style="font-size:19px" fill="var(--pos)">+0.689%</text>
+            <text class="nl" x="376" y="156">mean return per month &middot; n = 74</text>
+
+            <line x1="40" y1="190" x2="580" y2="190" stroke="var(--rule-soft)" stroke-width="1"/>
+            <text class="nl" x="40" y="208">One feature carried 100% of feature importance. The split threshold is a ten-month moving-average gap.</text>
+          </svg>
+          <p class="fig-note">Pushed to maximum regularization by the selection rule, the tree had room for exactly one question &mdash; and the question it chose was whether price sits above or below its ten-month moving average, which is Faber's tactical allocation rule arrived at independently from the data. A 2.25-percentage-point monthly spread across 122 months is the kind of result that is more persuasive for being simple, and it is also the reason the parameter-free version of the same rule outperforms every model in the study.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 6 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M2 10 L9 4 M2 10 L9 16 M9 4 L16 2 M9 4 L16 9 M9 16 L16 11 M9 16 L16 18"/></g></svg>
+          <span class="dom">Derivative pricing</span><span>Lattices &amp; replication</span><span>Convergence to 200 steps</span>
+        </div>
+        <h3 class="p-title">Lattice pricing and dynamic replication</h3>
+        <p class="p-q">Build the pricing stack from first principles on the lattice, then show that the hedge actually funds the payoff &mdash; walked down the worst path, node by node.</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Base case</b> S<sub>0</sub>&nbsp;=&nbsp;K&nbsp;=&nbsp;100, r&nbsp;=&nbsp;5%, &sigma;&nbsp;=&nbsp;20%, T&nbsp;=&nbsp;0.25.</li>
+            <li><b>Convergence</b> CRR binomial across 10, 25, 50, 100 and 200 steps, benchmarked to the closed-form value; a 150-step trinomial across strikes 90&ndash;110.</li>
+            <li><b>Greeks</b> lattice delta against the analytic value; vega by bump-and-reprice from 20% to 25%.</li>
+            <li><b>Replication</b> a short European put, S<sub>0</sub>&nbsp;=&nbsp;180, K&nbsp;=&nbsp;182, r&nbsp;=&nbsp;2%, &sigma;&nbsp;=&nbsp;25%, six months, delta-hedged node by node down the worst-case path with the cash account carried forward.</li>
+            <li><b>Monte Carlo</b> Heston at two correlation levels, Merton jump-diffusion at two intensities, Longstaff&ndash;Schwartz for early exercise, and knock-in barriers.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Lattice convergence and sensitivities</caption>
+              <thead><tr><th>Quantity</th><th>Lattice</th><th>Reference</th></tr></thead>
+              <tbody>
+                <tr><td>ATM call, 10 &rarr; 200 steps</td><td>4.5166 &rarr; 4.6100</td><td>&mdash;</td></tr>
+                <tr><td>Put&ndash;call parity error</td><td>1e&minus;14 &ndash; 1e&minus;12</td><td>0</td></tr>
+                <tr class="hi"><td>Delta</td><td>0.5693</td><td>0.5695</td></tr>
+                <tr><td>Vega, +5 vol pts</td><td>+0.9810</td><td>&mdash;</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">Put&ndash;call parity is used throughout as a <b>numerical diagnostic</b> rather than recited as theory: deviations are ranked across all four Monte Carlo configurations, from 0.003 for Heston at &rho;&nbsp;=&nbsp;&minus;0.30 to 0.08 for Merton at &lambda;&nbsp;=&nbsp;0.75, which is how you detect a broken engine.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            Parameters in this work are prescribed rather than calibrated to market data, and there is no variance reduction, no standard-error reporting and no runtime benchmarking. The Longstaff&ndash;Schwartz American call prices equal to the European, which is correct for a non-dividend-paying underlying but leaves the early-exercise machinery untested by that example.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 9</span><span class="fig-t">The hedge is shown to fund the strike, not asserted to</span></figcaption>
+          <svg viewBox="0 0 620 258" role="img" aria-label="Spot price falling along the worst-case lattice path from 180 to 162.54 to 146.77 to 132.52 against a strike line at 182. The hedge account terminates at exactly 182.00, covering the payoff of 49.48.">
+            <line x1="120" y1="68.5" x2="570" y2="68.5" stroke="var(--c2)" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <text class="nl" x="570" y="63" text-anchor="end">K = 182</text>
+
+            <rect x="496" y="68.5" width="28" height="114.1" fill="var(--c1-wash)"/>
+
+            <polyline points="150,73.1 270,113.4 390,149.8 510,182.6" fill="none" stroke="var(--c1)" stroke-width="2.5" stroke-linejoin="round"/>
+            <g fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2">
+              <circle cx="150" cy="73.1" r="5.5"/>
+              <circle cx="270" cy="113.4" r="5.5"/>
+              <circle cx="390" cy="149.8" r="5.5"/>
+              <circle cx="510" cy="182.6" r="5.5"/>
+            </g>
+            <g class="vl-m" text-anchor="middle">
+              <text x="150" y="62">180.00</text>
+              <text x="270" y="104">162.54</text>
+              <text x="390" y="140">146.77</text>
+            </g>
+            <text class="vl" x="510" y="202" text-anchor="middle">132.52</text>
+
+            <circle cx="510" cy="68.5" r="6" fill="none" stroke="var(--c2)" stroke-width="2.5"/>
+            <text class="vl" x="500" y="44" text-anchor="end">hedge account 182.00</text>
+            <line x1="474" y1="48" x2="505" y2="63" stroke="var(--rule)" stroke-width="1"/>
+
+            <line x1="540" y1="68.5" x2="540" y2="182.6" stroke="var(--ink-3)" stroke-width="1"/>
+            <path d="M536 72.5 L540 68.5 L544 72.5" fill="none" stroke="var(--ink-3)" stroke-width="1"/>
+            <path d="M536 178.6 L540 182.6 L544 178.6" fill="none" stroke="var(--ink-3)" stroke-width="1"/>
+            <text class="vl" x="552" y="129">49.48</text>
+            <text class="nl" x="552" y="143">payoff</text>
+
+            <g class="ax" text-anchor="middle">
+              <text x="150" y="226">t = 0</text>
+              <text x="270" y="226">1</text>
+              <text x="390" y="226">2</text>
+              <text x="510" y="226">3</text>
+            </g>
+            <text class="nl" x="120" y="248">Worst-case path, three steps. Intermediate nodes follow from &sigma; = 25%, T = 0.5 and the reported terminal value.</text>
+          </svg>
+          <p class="fig-note">A short put is written, delta-hedged at every node, and deliberately walked down the worst branch of the tree. Spot falls to 132.52, leaving a 49.48 obligation against a strike of 182 &mdash; and the cash account, carried forward with interest and rebalanced at each step, arrives at exactly 182.00. That the two meet to the cent is the demonstration: no-arbitrage pricing is not an abstraction but a funding statement, and this is what it looks like when you check it rather than quote it.</p>
+        </figure>
+
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 10</span><span class="fig-t">Jumps move the price; correlation barely does</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-1"></span>Call</span>
+            <span class="lg"><span class="sw sw-2"></span>Put</span>
+          </div>
+          <svg viewBox="0 0 620 248" role="img" aria-label="Option prices under four model configurations. Heston at correlation minus 0.30 gives call 3.46 and put 2.37; at minus 0.70, 3.45 and 2.39. Merton with jump intensity 0.25 gives 6.82 and 5.76; at 0.75, 8.26 and 7.24.">
+            <g class="gl">
+              <line x1="76" y1="190" x2="600" y2="190"/>
+              <line x1="76" y1="156.7" x2="600" y2="156.7"/>
+              <line x1="76" y1="123.3" x2="600" y2="123.3"/>
+              <line x1="76" y1="90" x2="600" y2="90"/>
+              <line x1="76" y1="56.7" x2="600" y2="56.7"/>
+            </g>
+            <g class="ax" text-anchor="end">
+              <text x="68" y="194">0</text>
+              <text x="68" y="160.7">2</text>
+              <text x="68" y="127.3">4</text>
+              <text x="68" y="94">6</text>
+              <text x="68" y="60.7">8</text>
+            </g>
+            <text class="ax" x="76" y="26">Option price, $</text>
+
+            <rect x="118" y="132.3" width="30" height="57.7" rx="3" fill="var(--c1)"/>
+            <rect x="152" y="150.5" width="30" height="39.5" rx="3" fill="var(--c2)"/>
+            <text class="vl" x="133" y="126" text-anchor="middle">3.46</text>
+            <text class="vl-m" x="167" y="144" text-anchor="middle">2.37</text>
+
+            <rect x="238" y="132.5" width="30" height="57.5" rx="3" fill="var(--c1)"/>
+            <rect x="272" y="150.2" width="30" height="39.8" rx="3" fill="var(--c2)"/>
+            <text class="vl" x="253" y="126" text-anchor="middle">3.45</text>
+            <text class="vl-m" x="287" y="144" text-anchor="middle">2.39</text>
+
+            <rect x="358" y="76.3" width="30" height="113.7" rx="3" fill="var(--c1)"/>
+            <rect x="392" y="94" width="30" height="96" rx="3" fill="var(--c2)"/>
+            <text class="vl" x="373" y="70" text-anchor="middle">6.82</text>
+            <text class="vl-m" x="407" y="88" text-anchor="middle">5.76</text>
+
+            <rect x="478" y="52.3" width="30" height="137.7" rx="3" fill="var(--c1)"/>
+            <rect x="512" y="69.3" width="30" height="120.7" rx="3" fill="var(--c2)"/>
+            <text class="vl" x="493" y="46" text-anchor="middle">8.26</text>
+            <text class="vl-m" x="527" y="63" text-anchor="middle">7.24</text>
+
+            <line class="zl" x1="76" y1="190" x2="600" y2="190"/>
+            <g class="ax" text-anchor="middle">
+              <text x="150" y="208">Heston</text>
+              <text x="150" y="222">&rho; = &minus;0.30</text>
+              <text x="270" y="208">Heston</text>
+              <text x="270" y="222">&rho; = &minus;0.70</text>
+              <text x="390" y="208">Merton</text>
+              <text x="390" y="222">&lambda; = 0.25</text>
+              <text x="510" y="208">Merton</text>
+              <text x="510" y="222">&lambda; = 0.75</text>
+            </g>
+          </svg>
+          <p class="fig-note">More than doubling the leverage effect in the Heston model &mdash; correlation from &minus;0.30 to &minus;0.70 &mdash; moves the call by a single cent and the put by two. Introducing jumps roughly doubles both prices, and tripling the jump intensity adds another 21% on top. For a short-dated option the first-order risk is the possibility of a discontinuous move, not the shape of the diffusion around it. That ordering is also what the parity diagnostic reflects: the Merton configurations carry the largest parity deviations, which is the expected signature of jump risk straining a finite path count.</p>
+        </figure>
+      </div>
+    </article>
+
+    <!-- ===== 7 ===== -->
+    <article class="project">
+      <div class="p-head">
+        <div class="p-meta">
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><path d="M1 16 C5 16, 7 6, 19 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><g fill="currentColor"><circle cx="4" cy="14.4" r="1.3"/><circle cx="11" cy="6.6" r="1.3"/><circle cx="18" cy="4.1" r="1.3"/></g></svg>
+          <span class="dom">Financial data</span><span>Curve fitting &amp; dimensionality</span><span>Nine tenors, thirty equities</span>
+        </div>
+        <h3 class="p-title">Curve construction and correlation structure</h3>
+        <p class="p-q">Fit a sovereign yield curve two ways and ask which assumption you are willing to live with &mdash; then test whether a PCA pipeline can tell real correlation structure from noise.</p>
+      </div>
+      <div class="p-body">
+        <div class="p-block">
+          <div class="blk-label">Design</div>
+          <ul class="chain">
+            <li><b>Curve</b> nine tenors of sovereign bond yields, from 4.847% at one month to 6.924% at twenty-five years.</li>
+            <li><b>Methods</b> parametric Nelson&ndash;Siegel against a natural cubic spline, with the boundary condition and its extrapolation consequence stated explicitly.</li>
+            <li><b>Null model first</b> PCA run on simulated uncorrelated Gaussians <em>before</em> touching real data, to establish what "no structure" looks like.</li>
+            <li><b>Real data</b> PCA on Treasury yield changes, then covariance and correlation PCA side by side on thirty large-cap technology equities over 124 trading days.</li>
+            <li><b>Validation</b> PCA and SVD shown numerically equivalent, with the correct scaling stated: eigenvalues &asymp; S&sup2;/(n&minus;1), n&nbsp;=&nbsp;123.</li>
+          </ul>
+        </div>
+        <div class="p-block">
+          <div class="blk-label">Results</div>
+          <div class="tbl-scroll">
+            <table>
+              <caption>Explained variance: null model against Treasury yield changes</caption>
+              <thead><tr><th>Component</th><th>Simulated</th><th>Treasuries</th></tr></thead>
+              <tbody>
+                <tr class="hi"><td>PC1</td><td>24.15</td><td>83.39</td></tr>
+                <tr><td>PC2</td><td>21.72</td><td>14.71</td></tr>
+                <tr><td>PC3</td><td>19.33</td><td>1.28</td></tr>
+                <tr><td>PC4</td><td>18.41</td><td>0.31</td></tr>
+                <tr><td>PC5</td><td>16.38</td><td>0.26</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:1.1rem">Nelson&ndash;Siegel fitted at &beta;<sub>0</sub>&nbsp;=&nbsp;7.43, &beta;<sub>1</sub>&nbsp;=&nbsp;&minus;2.33, &beta;<sub>2</sub>&nbsp;=&nbsp;&minus;1.24 and &lambda;&nbsp;=&nbsp;0.425. The write-up makes the right argument against exact interpolation: a spline that passes through every observed yield also encodes liquidity and issuance artifacts as though they were economics.</p>
+          <div class="limit">
+            <b>Reported limitation</b>
+            This is the least complete work in the set. Survivorship bias, look-ahead bias and corporate-action adjustment are not addressed, and the equity basket carries an unflagged selection look-ahead &mdash; constituents fixed as of the snapshot date, then six months of prior prices pulled. Returns are simple rather than log. The gap between the data-quality taxonomy in its first section and the data-quality practice in its later sections is the honest criticism of it.
+          </div>
+        </div>
+      </div>
+      <div class="p-figs">
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 11</span><span class="fig-t">What noise looks like, and what structure looks like</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-2"></span>Simulated independent noise</span>
+            <span class="lg"><span class="sw sw-1"></span>Treasury yield changes</span>
+          </div>
+          <svg viewBox="0 0 620 248" role="img" aria-label="Explained variance by principal component. Simulated independent noise spreads 24.15, 21.72, 19.33, 18.41 and 16.38 percent across five components. Treasury yield changes concentrate 83.39 percent in the first component, then 14.71, 1.28, 0.31 and 0.26.">
+            <text class="ax" x="10" y="24">Explained variance, %</text>
+            <g class="gl">
+              <line x1="76" y1="200" x2="600" y2="200"/>
+              <line x1="76" y1="155.6" x2="600" y2="155.6"/>
+              <line x1="76" y1="111.1" x2="600" y2="111.1"/>
+              <line x1="76" y1="66.7" x2="600" y2="66.7"/>
+            </g>
+            <g class="ax" text-anchor="end">
+              <text x="68" y="204">0</text>
+              <text x="68" y="159.6">25</text>
+              <text x="68" y="115.1">50</text>
+              <text x="68" y="70.7">75</text>
+            </g>
+
+            <rect x="129" y="157.1" width="28" height="42.9" rx="3" fill="var(--c2)"/>
+            <rect x="161" y="51.8" width="28" height="148.2" rx="3" fill="var(--c1)"/>
+            <text class="vl-m" x="143" y="150" text-anchor="middle">24.15</text>
+            <text class="vl" x="175" y="44" text-anchor="middle">83.39</text>
+
+            <rect x="227" y="161.4" width="28" height="38.6" rx="3" fill="var(--c2)"/>
+            <rect x="259" y="173.9" width="28" height="26.1" rx="3" fill="var(--c1)"/>
+            <text class="vl-m" x="241" y="154" text-anchor="middle">21.72</text>
+            <text class="vl" x="273" y="167" text-anchor="middle">14.71</text>
+
+            <rect x="325" y="165.6" width="28" height="34.4" rx="3" fill="var(--c2)"/>
+            <rect x="357" y="197.7" width="28" height="2.3" rx="1" fill="var(--c1)"/>
+            <text class="vl-m" x="339" y="158" text-anchor="middle">19.33</text>
+            <text class="vl" x="371" y="191" text-anchor="middle">1.28</text>
+
+            <rect x="423" y="167.3" width="28" height="32.7" rx="3" fill="var(--c2)"/>
+            <rect x="455" y="198.5" width="28" height="1.5" rx="0.75" fill="var(--c1)"/>
+            <text class="vl-m" x="437" y="160" text-anchor="middle">18.41</text>
+            <text class="vl" x="469" y="191" text-anchor="middle">0.31</text>
+
+            <rect x="521" y="170.9" width="28" height="29.1" rx="3" fill="var(--c2)"/>
+            <rect x="553" y="198.5" width="28" height="1.5" rx="0.75" fill="var(--c1)"/>
+            <text class="vl-m" x="535" y="163" text-anchor="middle">16.38</text>
+            <text class="vl" x="567" y="191" text-anchor="middle">0.26</text>
+
+            <line class="zl" x1="76" y1="200" x2="600" y2="200"/>
+            <g class="ax" text-anchor="middle">
+              <text x="159" y="220">PC1</text>
+              <text x="257" y="220">PC2</text>
+              <text x="355" y="220">PC3</text>
+              <text x="453" y="220">PC4</text>
+              <text x="551" y="220">PC5</text>
+            </g>
+            <text class="nl" x="76" y="240">Running the null model first is what licenses the comparison.</text>
+          </svg>
+          <p class="fig-note">Independent noise spreads its variance almost evenly &mdash; five components in a 16-to-24 percent band, which is exactly the flat profile that a dimensionality claim must be tested against. The Treasury curve puts 83.39 percent into a single component, the level factor, and 98.1 percent into the first two. The point is not that yield curves are low-dimensional, which is known; it is that the pipeline was shown capable of returning "no structure" before it was trusted to report structure.</p>
+        </figure>
+
+        <figure class="fig">
+          <figcaption><span class="fig-n">Fig. 12</span><span class="fig-t">What the three fitted parameters actually control</span></figcaption>
+          <div class="fig-legend">
+            <span class="lg"><span class="sw sw-1"></span>Curvature loading</span>
+            <span class="lg"><span class="sw sw-2"></span>Slope loading</span>
+            <span class="lg"><span class="sw sw-d2"></span>Level loading</span>
+          </div>
+          <svg viewBox="0 0 640 230" role="img" aria-label="Nelson-Siegel factor loadings against maturity at lambda 0.425. The level loading is flat at one. The slope loading decays from one toward 0.094 at twenty-five years. The curvature loading rises from zero to a peak of 0.298 near 4.2 years then decays.">
+            <g transform="translate(62,26)">
+              <g class="gl">
+                <line x1="0" y1="0" x2="560" y2="0"/>
+                <line x1="0" y1="75" x2="560" y2="75"/>
+                <line x1="112" y1="0" x2="112" y2="150"/>
+                <line x1="224" y1="0" x2="224" y2="150"/>
+                <line x1="336" y1="0" x2="336" y2="150"/>
+                <line x1="448" y1="0" x2="448" y2="150"/>
+              </g>
+              <line class="zl" x1="0" y1="150" x2="560" y2="150"/>
+
+              <line x1="0" y1="0" x2="560" y2="0" stroke="var(--c2)" stroke-width="1.8" stroke-dasharray="6 4"/>
+
+              <polyline fill="none" stroke="var(--c2)" stroke-width="2" points="0.0,0.0 5.6,7.7 11.2,14.9 16.8,21.6 22.4,27.8 28.0,33.6 33.6,39.1 39.2,44.2 44.8,49.0 50.4,53.4 56.0,57.6 61.6,61.5 67.2,65.2 72.8,68.7 78.4,71.9 84.0,75.0 89.6,77.9 95.2,80.6 100.8,83.2 106.4,85.6 112.0,87.8 117.6,90.0 123.2,92.0 128.8,93.9 134.4,95.8 140.0,97.5 145.6,99.1 151.2,100.7 156.8,102.2 162.4,103.6 168.0,104.9 173.6,106.1 179.2,107.4 184.8,108.5 190.4,109.6 196.0,110.6 201.6,111.6 207.2,112.6 212.8,113.5 218.4,114.4 224.0,115.2 229.6,116.0 235.2,116.8 240.8,117.5 246.4,118.2 252.0,118.9 257.6,119.5 263.2,120.2 268.8,120.8 274.4,121.3 280.0,121.9 285.6,122.4 291.2,123.0 296.8,123.5 302.4,123.9 308.0,124.4 313.6,124.9 319.2,125.3 324.8,125.7 330.4,126.1 336.0,126.5 341.6,126.9 347.2,127.3 352.8,127.6 358.4,128.0 364.0,128.3 369.6,128.6 375.2,128.9 380.8,129.3 386.4,129.6 392.0,129.8 397.6,130.1 403.2,130.4 408.8,130.7 414.4,130.9 420.0,131.2 425.6,131.4 431.2,131.7 436.8,131.9 442.4,132.1 448.0,132.4 453.6,132.6 459.2,132.8 464.8,133.0 470.4,133.2 476.0,133.4 481.6,133.6 487.2,133.8 492.8,134.0 498.4,134.1 504.0,134.3 509.6,134.5 515.2,134.7 520.8,134.8 526.4,135.0 532.0,135.1 537.6,135.3 543.2,135.4 548.8,135.6 554.4,135.7 560.0,135.9"/>
+
+              <polyline fill="none" stroke="var(--c1)" stroke-width="2.5" points="0.0,150.0 5.6,142.6 11.2,136.2 16.8,130.6 22.4,125.9 28.0,121.8 33.6,118.4 39.2,115.5 44.8,113.1 50.4,111.1 56.0,109.5 61.6,108.2 67.2,107.1 72.8,106.4 78.4,105.8 84.0,105.5 89.6,105.3 95.2,105.2 100.8,105.3 106.4,105.5 112.0,105.8 117.6,106.1 123.2,106.5 128.8,107.0 134.4,107.5 140.0,108.0 145.6,108.6 151.2,109.2 156.8,109.8 162.4,110.4 168.0,111.1 173.6,111.7 179.2,112.4 184.8,113.0 190.4,113.6 196.0,114.3 201.6,114.9 207.2,115.5 212.8,116.1 218.4,116.8 224.0,117.3 229.6,117.9 235.2,118.5 240.8,119.1 246.4,119.6 252.0,120.1 257.6,120.7 263.2,121.2 268.8,121.7 274.4,122.2 280.0,122.6 285.6,123.1 291.2,123.6 296.8,124.0 302.4,124.4 308.0,124.8 313.6,125.2 319.2,125.6 324.8,126.0 330.4,126.4 336.0,126.8 341.6,127.1 347.2,127.5 352.8,127.8 358.4,128.1 364.0,128.5 369.6,128.8 375.2,129.1 380.8,129.4 386.4,129.7 392.0,129.9 397.6,130.2 403.2,130.5 408.8,130.7 414.4,131.0 420.0,131.2 425.6,131.5 431.2,131.7 436.8,131.9 442.4,132.2 448.0,132.4 453.6,132.6 459.2,132.8 464.8,133.0 470.4,133.2 476.0,133.4 481.6,133.6 487.2,133.8 492.8,134.0 498.4,134.2 504.0,134.3 509.6,134.5 515.2,134.7 520.8,134.8 526.4,135.0 532.0,135.1 537.6,135.3 543.2,135.5 548.8,135.6 554.4,135.7 560.0,135.9"/>
+
+              <circle cx="94.5" cy="105.2" r="4.5" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+              <line x1="94.5" y1="105.2" x2="94.5" y2="150" stroke="var(--c1)" stroke-width="1" stroke-dasharray="2 3"/>
+
+              <text class="vl-m" x="560" y="-9" text-anchor="end">Level &mdash; constant 1.0</text>
+              <text class="vl-m" x="118" y="80">Slope</text>
+              <text class="vl" x="118" y="130">Curvature</text>
+
+              <g class="ax" text-anchor="middle">
+                <text x="0" y="168">0</text>
+                <text x="112" y="168">5</text>
+                <text x="224" y="168">10</text>
+                <text x="336" y="168">15</text>
+                <text x="448" y="168">20</text>
+                <text x="560" y="168">25</text>
+              </g>
+              <text class="ax" x="0" y="188">Maturity, years</text>
+              <g class="ax" text-anchor="end">
+                <text x="-10" y="4">1.0</text>
+                <text x="-10" y="79">0.5</text>
+                <text x="-10" y="154">0</text>
+              </g>
+            </g>
+          </svg>
+          <p class="fig-note">All three loadings share one axis because they are dimensionless weights on the same scale, and that comparison is the content: the level factor applies in full at every maturity, the slope factor decays to 0.094 by twenty-five years, and the curvature factor never exceeds 0.298 &mdash; marked at its peak. With &lambda;&nbsp;=&nbsp;0.425 the decay time constant 1/&lambda; is 2.35 years while the curvature loading peaks later, near 4.2 years. Those are two distinct quantities that are easy to conflate, and keeping them apart is the difference between quoting a parameter and understanding it.</p>
+        </figure>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <h2>Methods and stack</h2>
+    </div>
+    <div class="stack-grid">
+      <div class="stack-cell">
+        <h3>
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M2 10 L9 4 M2 10 L9 16 M9 4 L16 2 M9 4 L16 9 M9 16 L16 11 M9 16 L16 18"/></g></svg>
+          Pricing &amp; simulation
+        </h3>
+        <ul>
+          <li>CRR binomial / trinomial</li>
+          <li>Monte Carlo, antithetic</li>
+          <li>Euler, full truncation</li>
+          <li>Longstaff&ndash;Schwartz LSM</li>
+          <li>Carr&ndash;Madan FFT</li>
+          <li>Heston, Bates, Merton</li>
+          <li>CIR short rate</li>
+          <li>Bump-and-reprice Greeks</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h3>
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 15 C7 13, 13 7, 19 4"/><path d="M1 18 C7 15, 13 10, 19 8" opacity="0.5"/></g></svg>
+          Econometrics
+        </h3>
+        <ul>
+          <li>ADF unit root</li>
+          <li>Engle&ndash;Granger</li>
+          <li>ECM / VECM</li>
+          <li>Impulse response</li>
+          <li>Gaussian HMM, EM</li>
+          <li>Nelson&ndash;Siegel</li>
+          <li>Cubic spline</li>
+          <li>PCA / SVD</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h3>
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.3" fill="none"><path d="M10 6 L4 13"/><path d="M10 6 L16 13"/></g><g fill="currentColor"><circle cx="10" cy="4.5" r="2"/><circle cx="4" cy="15" r="2"/><circle cx="16" cy="15" r="2"/></g></svg>
+          Learning &amp; inference
+        </h3>
+        <ul>
+          <li>Ridge, random Fourier</li>
+          <li>PCR, CART, LDA, SVM</li>
+          <li>MLP (L-BFGS)</li>
+          <li>Bagging, RF, boosting</li>
+          <li>Constrained stacking</li>
+          <li>Clark&ndash;West</li>
+          <li>Pesaran&ndash;Timmermann</li>
+          <li>Circular block bootstrap</li>
+        </ul>
+      </div>
+      <div class="stack-cell">
+        <h3>
+          <svg class="p-glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M2 7.5 L18 7.5"/><path d="M7 7.5 L7 17"/></g></svg>
+          Tooling
+        </h3>
+        <ul>
+          <li>Python 3</li>
+          <li>numpy 2.1.3</li>
+          <li>pandas 2.2.3</li>
+          <li>scikit-learn 1.6.1</li>
+          <li>statsmodels</li>
+          <li>scipy (DE, L-BFGS-B)</li>
+          <li>matplotlib 3.10.0</li>
+          <li>yfinance</li>
+        </ul>
+      </div>
+    </div>
+    <p class="prose" style="margin-top:1.6rem;color:var(--ink-3);font-size:0.95rem">Where a library is listed it is either named in the underlying analysis or evidenced by verbatim parameter names in the code. Statistical tests in the machine learning work were implemented directly rather than imported.</p>
+  </div>
+</section>
+
+<section id="bridge">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <h2>Why a quantitative toolkit sits in an operator's hands</h2>
+    </div>
+    <div class="bridge">
+      <div class="prose">
+        <p>I am a co-founder and CxTO, not a career desk quant, and the financial engineering is deliberate rather than decorative. The methods above are the ones that answer the questions an operating company actually faces.</p>
+        <p>A product decision, a cohort analysis and a derivative valuation share a structure: a signal buried in a dependent series, a model with more freedom than the data supports, and an incentive to report the flattering number. The discipline is identical &mdash; hold out a clean sample, know what a null result looks like before you start, and keep the benchmark that beats you in the write-up.</p>
+        <p>Before Sartori AI I worked on enterprise AI at IBM Watson and Google Vertex AI, and on retail systems at Macy's and Disney. The quantitative training is what connects the modeling to the P&amp;L rather than leaving it as a demo.</p>
+      </div>
+      <div class="bridge-card">
+        <h3>Transfers directly</h3>
+        <ul class="rail">
+          <li><b>Hindsight accounting</b>Any internal metric selected and evaluated on the same data needs the oracle gap deducted before anyone acts on it.</li>
+          <li><b>Identification</b>Two models that fit equally well with different parameters mean the question is underdetermined, not answered.</li>
+          <li><b>Regime awareness</b>Dispersion, not direction, is often what changes state &mdash; in volatility and in customer behaviour alike.</li>
+          <li><b>Benchmark honesty</b>If a simple rule beats the model, the simple rule is the result.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h2 style="font-size:1.4rem;margin-bottom:1rem">Contact</h2>
+        <div class="contact-line">
+          <span id="email">r.michael@sartori.ai</span>
+          <span>Chicago, Illinois</span>
+        </div>
+        <button class="copy-btn" id="copy" type="button">Copy email</button>
+      </div>
+      <div class="asof">
+        <div>R. Michael Merritt</div>
+        <div>Quantitative finance &middot; Pricing, risk, forecasting</div>
+        <div style="margin-top:0.5rem">Compiled 3 November 2026</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var c = document.getElementById('paths');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  function hex(v, fb) {
+    var s = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    return s || fb;
+  }
+  function draw() {
+    var host = c.parentElement;
+    var w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = Math.floor(w * dpr);
+    c.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    var kappa = 0.0261, theta = 0.0274, sigv = 1.2389, rho = -0.9581, v0 = 0.1016;
+    var steps = 260, dt = 1 / 260, nPaths = 26;
+    var seed = 20261103;
+    function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    function gauss() {
+      var u = Math.max(rnd(), 1e-12), v = rnd();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+    var series = [], lo = Infinity, hi = -Infinity;
+    for (var p = 0; p < nPaths; p++) {
+      var s = 1, vv = v0, pts = [1];
+      for (var t = 0; t < steps; t++) {
+        var z1 = gauss(), z2 = rho * z1 + Math.sqrt(1 - rho * rho) * gauss();
+        var vp = Math.max(vv, 0);
+        s *= Math.exp(-0.5 * vp * dt + Math.sqrt(vp * dt) * z1);
+        vv = vv + kappa * (theta - vp) * dt + sigv * Math.sqrt(vp * dt) * z2;
+        pts.push(s);
+        if (s < lo) lo = s;
+        if (s > hi) hi = s;
+      }
+      series.push(pts);
+    }
+    var pad = (hi - lo) * 0.12 || 0.1;
+    lo -= pad; hi += pad;
+    var ink = hex('--accent', '#1A3D63');
+    ctx.lineWidth = 0.9;
+    ctx.lineJoin = 'round';
+    for (var i = 0; i < series.length; i++) {
+      var pts2 = series[i];
+      ctx.globalAlpha = 0.07 + 0.05 * (i / series.length);
+      ctx.strokeStyle = ink;
+      ctx.beginPath();
+      for (var j = 0; j < pts2.length; j++) {
+        var x = (j / (pts2.length - 1)) * w;
+        var y = h - ((pts2[j] - lo) / (hi - lo)) * h;
+        if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  draw();
+  var to;
+  window.addEventListener('resize', function () { clearTimeout(to); to = setTimeout(draw, 160); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', draw);
+  }
+})();
+
+(function () {
+  var btn = document.getElementById('copy');
+  var el = document.getElementById('email');
+  if (!btn || !el) return;
+  btn.addEventListener('click', function () {
+    var txt = el.textContent.trim();
+    function restore() { setTimeout(function () { btn.textContent = 'Copy email'; }, 1900); }
+    function select() {
+      try {
+        var r = document.createRange();
+        r.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+      } catch (e) {}
+      btn.textContent = 'Select and copy';
+      restore();
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function () {
+          btn.textContent = 'Copied';
+          restore();
+        }, select);
+      } else { select(); }
+    } catch (e) { select(); }
+  });
+})();
+</script>
+  </body>
+</html>

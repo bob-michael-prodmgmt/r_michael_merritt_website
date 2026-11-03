@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>R. Michael Merritt</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <style>
+      :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+      body{margin:0}
+      img{max-width:100%}
+      [hidden]{display:none!important}
+    </style>
+  </head>
+  <body>
+<style>
+/* Layout: a single-page professional record — masthead over a graph field,
+   audience router, then dense evidence sections with charts carrying the weight. */
+:root {
+  --paper:      #F3F5F5;
+  --surface:    #FFFFFF;
+  --surface-2:  #E8EDEC;
+  --ink:        #0B1413;
+  --ink-2:      #35423F;
+  --ink-3:      #5C6A66;
+  --rule:       #D1DAD8;
+  --rule-soft:  #E2E8E7;
+  --accent:     #00595E;
+  --accent-2:   #007E84;
+  --accent-wash:#DDECEC;
+  --c1:         #007E84;
+  --c2:         #BC5E12;
+  --c1-wash:    #DCEBEB;
+  --c2-wash:    #F6E6D6;
+  --on-fill:    #FFFFFF;
+  --grid:       #DEE6E5;
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #070C0C;
+    --surface:    #0F1716;
+    --surface-2:  #151F1E;
+    --ink:        #E3EAE8;
+    --ink-2:      #ADBAB6;
+    --ink-3:      #7F8D89;
+    --rule:       #223130;
+    --rule-soft:  #182322;
+    --accent:     #56C8CC;
+    --accent-2:   #7ADBDE;
+    --accent-wash:#102020;
+    --c1:         #56C8CC;
+    --c2:         #E59B3C;
+    --c1-wash:    #102423;
+    --c2-wash:    #291F13;
+    --on-fill:    #070C0C;
+    --grid:       #1C2827;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:      #070C0C;
+  --surface:    #0F1716;
+  --surface-2:  #151F1E;
+  --ink:        #E3EAE8;
+  --ink-2:      #ADBAB6;
+  --ink-3:      #7F8D89;
+  --rule:       #223130;
+  --rule-soft:  #182322;
+  --accent:     #56C8CC;
+  --accent-2:   #7ADBDE;
+  --accent-wash:#102020;
+  --c1:         #56C8CC;
+  --c2:         #E59B3C;
+  --c1-wash:    #102423;
+  --c2-wash:    #291F13;
+  --on-fill:    #070C0C;
+  --grid:       #1C2827;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--paper);
+}
+.wrap {
+  max-width: 1140px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- masthead ---------- */
+.masthead { position: relative; border-bottom: 1px solid var(--rule); overflow: hidden; }
+#graph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.masthead .wrap { position: relative; z-index: 2; padding-block: 4rem 2.4rem; }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.665rem; letter-spacing: 0.17em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 1.3rem;
+}
+h1 {
+  font-family: var(--display); font-optical-sizing: auto; font-weight: 600;
+  font-size: clamp(2.5rem, 7.4vw, 4.5rem); line-height: 1.0;
+  letter-spacing: -0.022em; margin: 0 0 0.6rem; text-wrap: balance;
+}
+.h1-sub {
+  font-family: var(--display); font-weight: 400; font-style: italic;
+  font-size: clamp(1.15rem, 2.7vw, 1.6rem); color: var(--ink-2); margin: 0 0 1.6rem;
+  text-wrap: balance;
+}
+.thesis { max-width: 36rem; font-size: 1.04rem; color: var(--ink-2); margin: 0 0 2rem; }
+.thesis strong { color: var(--ink); font-weight: 600; }
+.ident {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem;
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.03em;
+  color: var(--ink-3); padding-top: 1.2rem; border-top: 1px solid var(--rule); max-width: 46rem;
+}
+.ident b { color: var(--ink-2); font-weight: 500; }
+
+/* ---------- nav ---------- */
+.index-bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.index-bar .wrap { padding-block: 0; }
+.index-scroll { display: flex; gap: 1.4rem; overflow-x: auto; scrollbar-width: none; padding-block: 0.7rem; }
+.index-scroll::-webkit-scrollbar { display: none; }
+.index-scroll a {
+  flex: none; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+  white-space: nowrap; padding-bottom: 2px; border-bottom: 1.5px solid transparent;
+}
+.index-scroll a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---------- sections ---------- */
+section { border-bottom: 1px solid var(--rule-soft); }
+section > .wrap { padding-block: 3.4rem; }
+.sec-head { display: flex; gap: 1rem; align-items: baseline; margin-bottom: 1.7rem; }
+.sec-num {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 500; color: var(--accent);
+  letter-spacing: 0.08em; padding-top: 0.4rem; flex: none;
+}
+h2 {
+  font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+  line-height: 1.12; letter-spacing: -0.016em; margin: 0; text-wrap: balance;
+}
+h3 { font-family: var(--body); font-weight: 600; font-size: 1.05rem; line-height: 1.3; margin: 0 0 0.5rem; }
+.lede { max-width: 40rem; font-size: 1.04rem; color: var(--ink-2); }
+.prose { max-width: 40rem; }
+.prose p { margin: 0 0 1rem; }
+.prose p:last-child { margin-bottom: 0; }
+a { color: var(--accent); }
+
+/* ---------- router ---------- */
+.router { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (min-width: 640px) { .router { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .router { grid-template-columns: repeat(3, 1fr); } }
+.door {
+  background: var(--surface); padding: 1.3rem 1.35rem; min-width: 0;
+  text-decoration: none; color: inherit; display: block;
+}
+.door:hover { background: var(--accent-wash); }
+.door .who {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.door .what { font-weight: 600; font-size: 1.02rem; margin-bottom: 0.3rem; }
+.door .why { font-size: 0.9rem; color: var(--ink-3); }
+
+/* ---------- stats ---------- */
+.stat-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 2rem;
+}
+.stat { background: var(--surface); padding: 1rem 1.1rem; }
+.stat .v {
+  font-family: var(--mono); font-size: 1.36rem; font-weight: 600;
+  font-variant-numeric: tabular-nums; line-height: 1.1; color: var(--ink);
+}
+.stat .k {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: 0.4rem;
+}
+
+/* ---------- cards ---------- */
+.card {
+  border: 1px solid var(--rule); background: var(--surface); margin-bottom: 1.5rem;
+}
+.card:last-child { margin-bottom: 0; }
+.card-head { padding: 1.4rem 1.45rem 1.15rem; border-bottom: 1px solid var(--rule-soft); }
+.card-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1rem;
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.7rem;
+}
+.card-meta .dom { color: var(--accent); font-weight: 600; }
+.glyph { width: 20px; height: 20px; color: var(--accent); flex: none; display: block; }
+.card-title {
+  font-family: var(--display); font-weight: 600; font-size: clamp(1.15rem, 2.8vw, 1.5rem);
+  line-height: 1.16; margin: 0 0 0.6rem; letter-spacing: -0.012em; text-wrap: balance;
+}
+.card-q { max-width: 42rem; color: var(--ink-2); margin: 0; font-size: 1rem; }
+.card-body { padding: 1.3rem 1.45rem 1.5rem; display: grid; gap: 1.5rem; }
+@media (min-width: 900px) { .card-body { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 2.1rem; } }
+.blk { min-width: 0; }
+.blk-label {
+  font-family: var(--mono); font-size: 0.61rem; font-weight: 600; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--ink-3); padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule-soft); margin-bottom: 0.85rem;
+}
+.blk p { margin: 0 0 0.75rem; font-size: 0.96rem; }
+.blk p:last-child { margin-bottom: 0; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.48rem; }
+.chain li { font-size: 0.93rem; padding-left: 1.05rem; position: relative; color: var(--ink-2); min-width: 0; }
+.chain li::before {
+  content: ""; position: absolute; left: 0; top: 0.66em;
+  width: 5px; height: 1px; background: var(--accent);
+}
+.chain li b { color: var(--ink); font-weight: 600; }
+
+/* ---------- lists ---------- */
+.lane { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (min-width: 700px) { .lane { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1020px) { .lane { grid-template-columns: repeat(3, 1fr); } }
+.lane-cell { background: var(--surface); padding: 1.15rem 1.25rem; min-width: 0; }
+.lane-cell h3 {
+  font-family: var(--mono); font-size: 0.63rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 0.7rem;
+  display: flex; align-items: center; gap: 0.45rem;
+}
+.lane-cell ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+.lane-cell li { font-size: 0.88rem; color: var(--ink-2); }
+.lane-cell li span { color: var(--ink-3); }
+
+/* ---------- education ---------- */
+.edu { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.edu-row {
+  background: var(--surface); padding: 1.05rem 1.25rem; display: grid; gap: 0.3rem 1.3rem;
+  min-width: 0;
+}
+@media (min-width: 820px) { .edu-row { grid-template-columns: minmax(0,1.6fr) minmax(0,1fr) auto; align-items: baseline; } }
+.edu-deg { font-weight: 600; font-size: 0.98rem; }
+.edu-sch { font-size: 0.9rem; color: var(--ink-3); }
+.edu-gpa {
+  font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--accent);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+
+/* ---------- tables ---------- */
+.tbl-scroll { overflow-x: auto; border: 1px solid var(--rule-soft); }
+table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 0.76rem; }
+caption {
+  caption-side: top; text-align: left; font-family: var(--mono); font-size: 0.61rem;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 0 0 0.55rem;
+}
+th, td {
+  padding: 0.48rem 0.72rem; text-align: right; font-variant-numeric: tabular-nums;
+  white-space: nowrap; border-bottom: 1px solid var(--rule-soft);
+}
+th {
+  font-weight: 600; font-size: 0.62rem; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--ink-3); background: var(--surface-2);
+}
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 8rem; }
+tbody tr:last-child td { border-bottom: none; }
+tr.hi td { background: var(--accent-wash); font-weight: 600; color: var(--ink); }
+
+.note {
+  margin-top: 0.3rem; padding: 0.8rem 0.95rem; background: var(--surface-2);
+  border-left: 2px solid var(--rule); font-size: 0.9rem; color: var(--ink-3);
+}
+.note b {
+  font-family: var(--mono); font-size: 0.61rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-2); display: block; margin-bottom: 0.28rem; font-weight: 600;
+}
+
+/* ---------- figures ---------- */
+.fig {
+  margin: 0; padding: 1.25rem 1.45rem 1.4rem; border-top: 1px solid var(--rule-soft);
+  background: var(--surface-2);
+}
+.fig + .fig { border-top: 1px solid var(--rule); }
+.fig figcaption { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; align-items: baseline; margin-bottom: 0.3rem; }
+.fig-n {
+  font-family: var(--mono); font-size: 0.59rem; font-weight: 600; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--c2); flex: none;
+}
+.fig-t { font-weight: 600; font-size: 0.98rem; color: var(--ink); }
+.fig-legend {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 1.05rem; align-items: center;
+  font-family: var(--mono); font-size: 0.65rem; color: var(--ink-2); margin: 0.5rem 0 0.85rem;
+}
+.fig-legend span.lg { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sw { width: 11px; height: 11px; border-radius: 2px; flex: none; display: inline-block; }
+.sw-1 { background: var(--c1); }
+.sw-2 { background: var(--c2); }
+.fig svg { display: block; width: 100%; height: auto; max-width: 100%; overflow: visible; }
+.fig-note { margin: 0.85rem 0 0; font-size: 0.85rem; color: var(--ink-3); max-width: 46rem; }
+svg text { font-variant-numeric: tabular-nums; }
+.ax { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+.rl { font-family: var(--body); font-size: 11.5px; fill: var(--ink-2); }
+.vl { font-family: var(--mono); font-size: 11px; font-weight: 600; fill: var(--ink); }
+.vl-m { font-family: var(--mono); font-size: 11px; font-weight: 500; fill: var(--ink-2); }
+.vl-on { font-family: var(--mono); font-size: 11px; font-weight: 600; fill: var(--on-fill); }
+.nl { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+.gl { stroke: var(--grid); stroke-width: 1; }
+.zl { stroke: var(--rule); stroke-width: 1.5; }
+
+/* ---------- links ---------- */
+.linkgrid { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+@media (min-width: 700px) { .linkgrid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1020px) { .linkgrid { grid-template-columns: repeat(3, 1fr); } }
+.linkcell {
+  background: var(--surface); padding: 1rem 1.2rem; text-decoration: none; color: inherit;
+  display: block; min-width: 0;
+}
+.linkcell:hover { background: var(--accent-wash); }
+.linkcell .lt { font-weight: 600; font-size: 0.94rem; margin-bottom: 0.15rem; }
+.linkcell .ld { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-3); word-break: break-word; }
+
+/* ---------- footer ---------- */
+footer { border-bottom: none; }
+footer > .wrap { padding-block: 2.8rem 3.2rem; }
+.foot-grid { display: grid; gap: 1.6rem; }
+@media (min-width: 720px) { .foot-grid { grid-template-columns: 1fr auto; align-items: end; } }
+.contact-line { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-2); display: grid; gap: 0.35rem; }
+.contact-line span { user-select: all; }
+.copy-btn {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent); background: transparent; border: 1px solid var(--rule);
+  padding: 0.48rem 0.8rem; cursor: pointer; justify-self: start; margin-top: 0.35rem;
+}
+.copy-btn:hover { background: var(--accent-wash); }
+.asof { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.05em; color: var(--ink-3); }
+
+:where(a, button):focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<header class="masthead">
+  <canvas id="graph" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">AI Product Leader &middot; Founder &middot; Researcher</p>
+    <h1>R. Michael Merritt</h1>
+    <p class="h1-sub">I turn frontier AI into products that ship.</p>
+    <p class="thesis">Two decades building production AI &mdash; IBM Watson, Google Vertex AI, healthcare, retail. Founder and CEO of <strong>Sartori AI</strong>, a B2B apparel intelligence platform for mid-market retailers. Patent holder, peer-reviewed researcher, and a quantitative finance practitioner who reports results at the strength that survives scrutiny.</p>
+    <div class="ident">
+      <div><b>Role</b> Founder &amp; CEO, Sartori AI</div>
+      <div><b>Based</b> Chicago, IL</div>
+      <div><b>Focus</b> Applied AI &middot; Recommendation &middot; Quantitative modeling</div>
+    </div>
+  </div>
+</header>
+
+<div class="index-bar">
+  <div class="wrap">
+    <nav class="index-scroll" aria-label="Section index">
+      <a href="#start">Start here</a>
+      <a href="#sartori">Sartori AI</a>
+      <a href="#enterprise">Enterprise track record</a>
+      <a href="#quant">Quantitative finance</a>
+      <a href="#lab">Applied ML lab</a>
+      <a href="#research">Research &amp; IP</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#links">Links</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</div>
+
+<section id="start">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <h2>Who are you here to learn about?</h2>
+    </div>
+    <div class="router">
+      <a class="door" href="#sartori">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 16 L6 11 L10 13 L18 4"/></g><circle cx="18" cy="4" r="2" fill="currentColor"/></svg>
+          Investors
+        </div>
+        <div class="what">The company</div>
+        <div class="why">What Sartori AI is building, the platform behind it, and the wedge it is taking to market.</div>
+      </a>
+      <a class="door" href="#enterprise">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="10" cy="6" r="3"/><path d="M3 17 C3 12.5, 17 12.5, 17 17"/></g></svg>
+          Recruiters &amp; boards
+        </div>
+        <div class="what">The operating record</div>
+        <div class="why">Enterprise AI at scale, teams built, systems shipped, and the industries they ran in.</div>
+      </a>
+      <a class="door" href="#quant">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><polyline points="2,15 6,9 9,12 13,4 18,8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          Quants &amp; risk
+        </div>
+        <div class="what">The modeling work</div>
+        <div class="why">Derivative pricing, stochastic volatility, econometrics and machine learning, with the limitations reported.</div>
+      </a>
+      <a class="door" href="#research">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.5 12.5 L18 18"/></g></svg>
+          Researchers &amp; peers
+        </div>
+        <div class="what">The published work</div>
+        <div class="why">A peer-reviewed paper, two patents, and contributions to twenty-plus filings in recommendation systems.</div>
+      </a>
+      <a class="door" href="#lab">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M7 2 L7 8 L3 16 C2.5 17.5, 3.5 18, 5 18 L15 18 C16.5 18, 17.5 17.5, 17 16 L13 8 L13 2"/><path d="M6 2 L14 2"/><path d="M5.2 12 L14.8 12"/></g></svg>
+          Engineers
+        </div>
+        <div class="what">The notebooks</div>
+        <div class="why">Sixteen end-to-end machine learning projects across regression, classification, clustering, vision and audio.</div>
+      </a>
+      <a class="door" href="#credentials">
+        <div class="who">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 6 L10 2 L18 6 L10 10 Z"/><path d="M5 8 L5 14 C5 15.5, 15 15.5, 15 14 L15 8"/></g></svg>
+          Everyone
+        </div>
+        <div class="what">The credentials</div>
+        <div class="why">Six graduate credentials and thirty-eight professional certifications, mapped by domain.</div>
+      </a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="v">20+</div><div class="k">Years in AI</div></div>
+      <div class="stat"><div class="v">20+</div><div class="k">Systems shipped</div></div>
+      <div class="stat"><div class="v">350+</div><div class="k">People led</div></div>
+      <div class="stat"><div class="v">28M+</div><div class="k">Members reached</div></div>
+      <div class="stat"><div class="v">2</div><div class="k">US patents</div></div>
+      <div class="stat"><div class="v">38</div><div class="k">Certifications</div></div>
+      <div class="stat"><div class="v">6</div><div class="k">Grad credentials</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="sartori">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <h2>Sartori AI</h2>
+    </div>
+    <p class="lede" style="margin-bottom:1.8rem">Sartori AI is a <b>B2B apparel intelligence platform for mid-market fashion retailers</b>. It builds a structured graph of garments, wardrobes and post-purchase behaviour, and sells the decisions that graph makes possible &mdash; starting with returns.</p>
+
+    <article class="card">
+      <div class="card-head">
+        <div class="card-meta">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 2 L10 7"/><path d="M4 16 L7.5 10"/><path d="M16 16 L12.5 10"/></g><g fill="currentColor"><circle cx="10" cy="8.5" r="2.4"/><circle cx="3" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></g></svg>
+          <span class="dom">Go-to-market</span><span>Current wedge</span>
+        </div>
+        <h3 class="card-title">Reverse Intelligence Snapshot</h3>
+        <p class="card-q">Apparel retailers lose margin to returns they cannot explain. Return reason codes say a customer clicked "doesn't fit." They do not say which garment, which construction decision, or which supplier produced the problem.</p>
+      </div>
+      <div class="card-body">
+        <div class="blk">
+          <div class="blk-label">The product</div>
+          <ul class="chain">
+            <li><b>Snapshot</b> a bounded diagnostic engagement that turns a retailer's own return data into attributed cause, delivered as a scored assessment rather than a dashboard.</li>
+            <li><b>SRII</b> the Sartori Returns Intelligence Index &mdash; a scored framework across assessment dimensions that gives a retailer a comparable baseline and a ranked set of interventions.</li>
+            <li><b>Audience</b> merchandising, sourcing and vendor compliance &mdash; the functions that can act on an attributed cause, not just observe a rate.</li>
+            <li><b>Wedge logic</b> returns were selected as the entry point from a systematic review of thirteen stages of the apparel lifecycle, scored on market pull, defensibility and build cost.</li>
+          </ul>
+        </div>
+        <div class="blk">
+          <div class="blk-label">Why this seat</div>
+          <p>The returns software category is crowded with platforms that <em>process</em> returns and report rates. Almost nobody sells attributed cause to the people who choose fabrics, grade sizes and sign supplier contracts.</p>
+          <p>That gap is the thesis. It is also the risk: the buyer is uncontested partly because the function has not historically owned returns, which makes budget creation part of the sale rather than an afterthought.</p>
+          <div class="note">
+            <b>Stated plainly</b>
+            Sartori is pre-seed and the wedge is under active review. The lifecycle analysis that selected returns is re-run as the market moves, and the platform below was built to survive a change of wedge rather than to serve one.
+          </div>
+        </div>
+      </div>
+      <figure class="fig">
+        <figcaption><span class="fig-n">Fig. 1</span><span class="fig-t">The platform the wedge sits on</span></figcaption>
+        <svg viewBox="0 0 620 300" role="img" aria-label="Architecture diagram. Nine product surfaces feed a wardrobe graph keyed on GS1 Digital Link, backed by a CLIP and FAISS retrieval pipeline over 105,000 garment embeddings, exposed through 87 production API endpoints, with the Reverse Intelligence Snapshot sitting on top.">
+          <text class="nl" x="10" y="14">NINE PRODUCT SURFACES</text>
+          <g>
+            <rect x="10" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="41" y="43" text-anchor="middle" fill="var(--c1)">CX</text>
+            <rect x="78" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="109" y="43" text-anchor="middle" fill="var(--c1)">BX</text>
+            <rect x="146" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="177" y="43" text-anchor="middle" fill="var(--c1)">DX</text>
+            <rect x="214" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="245" y="43" text-anchor="middle" fill="var(--c1)">RX</text>
+            <rect x="282" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="313" y="43" text-anchor="middle" fill="var(--c1)">WX</text>
+            <rect x="350" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="381" y="43" text-anchor="middle" fill="var(--c1)">SX</text>
+            <rect x="418" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="449" y="43" text-anchor="middle" fill="var(--c1)">PX</text>
+            <rect x="486" y="24" width="62" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="517" y="43" text-anchor="middle" fill="var(--c1)">MX</text>
+            <rect x="554" y="24" width="56" height="30" rx="4" fill="var(--c1-wash)" stroke="var(--c1)" stroke-width="1"/>
+            <text class="vl" x="582" y="43" text-anchor="middle" fill="var(--c1)">IX</text>
+          </g>
+
+          <g stroke="var(--rule)" stroke-width="1" fill="none">
+            <path d="M41 54 L41 66 L310 66"/><path d="M109 54 L109 66"/><path d="M177 54 L177 66"/>
+            <path d="M245 54 L245 66"/><path d="M313 54 L313 66"/><path d="M381 54 L381 66"/>
+            <path d="M449 54 L449 66"/><path d="M517 54 L517 66"/><path d="M582 54 L582 66 L310 66"/>
+            <path d="M310 66 L310 80"/>
+          </g>
+          <path d="M306 76 L310 82 L314 76" fill="none" stroke="var(--rule)" stroke-width="1"/>
+
+          <rect x="80" y="84" width="460" height="72" rx="5" fill="var(--surface)" stroke="var(--c1)" stroke-width="1.6"/>
+          <text class="vl" x="310" y="106" text-anchor="middle" style="font-size:13px">Wardrobe graph</text>
+          <text class="nl" x="310" y="124" text-anchor="middle">Primary key: GS1 Digital Link &middot; DPP passport schema</text>
+          <text class="nl" x="310" y="142" text-anchor="middle">CLIP + FAISS retrieval over 105,000 garment embeddings</text>
+
+          <g stroke="var(--rule)" stroke-width="1" fill="none"><path d="M310 156 L310 174"/></g>
+          <path d="M306 170 L310 176 L314 170" fill="none" stroke="var(--rule)" stroke-width="1"/>
+
+          <rect x="150" y="178" width="320" height="42" rx="5" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1"/>
+          <text class="vl" x="310" y="196" text-anchor="middle">87 production API endpoints</text>
+          <text class="nl" x="310" y="212" text-anchor="middle">GCP &middot; PostgreSQL row-level security &middot; invite gate</text>
+
+          <g stroke="var(--c2)" stroke-width="1.4" fill="none"><path d="M310 220 L310 238"/></g>
+          <path d="M306 234 L310 240 L314 234" fill="none" stroke="var(--c2)" stroke-width="1.4"/>
+
+          <rect x="170" y="242" width="280" height="44" rx="5" fill="var(--c2-wash)" stroke="var(--c2)" stroke-width="1.6"/>
+          <text class="vl" x="310" y="262" text-anchor="middle" style="font-size:13px" fill="var(--c2)">Reverse Intelligence Snapshot</text>
+          <text class="nl" x="310" y="278" text-anchor="middle">The commercial wedge &mdash; replaceable without rebuilding the graph</text>
+        </svg>
+        <p class="fig-note">The point of the diagram is the last line. Nine surfaces feed one graph, the graph is keyed on a global standard rather than an internal identifier, and the commercial product sits on top as a thin layer. If the wedge changes &mdash; and at pre-seed it may &mdash; the asset underneath does not have to be rebuilt. That separation is a deliberate architectural decision, not an accident of sequencing.</p>
+      </figure>
+    </article>
+  </div>
+</section>
+
+<section id="enterprise">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <h2>Enterprise track record</h2>
+    </div>
+    <p class="lede" style="margin-bottom:1.8rem">Production AI inside large organizations, where the hard part is rarely the model. Twenty years across healthcare, enterprise technology, retail, finance and marketing.</p>
+    <div class="lane">
+      <div class="lane-cell">
+        <h3>
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 7 L13 7 M7 10 L13 10 M7 13 L11 13"/></g></svg>
+          Enterprise AI
+        </h3>
+        <ul>
+          <li>IBM Watson <span>&mdash; enterprise AI platforms</span></li>
+          <li>Google Vertex AI <span>&mdash; applied ML</span></li>
+          <li>Model deployment at organizational scale</li>
+          <li>AI governance and adoption programs</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 3 L10 17 M3 10 L17 10"/><circle cx="10" cy="10" r="7"/></g></svg>
+          Healthcare
+        </h3>
+        <ul>
+          <li>Centene platform <span>&mdash; 28M+ members reached</span></li>
+          <li>AI in healthcare capstone certification</li>
+          <li>Regulated-environment delivery</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 7 L16 7 L15 17 L5 17 Z"/><path d="M7.5 7 C7.5 4, 12.5 4, 12.5 7"/></g></svg>
+          Retail &amp; consumer
+        </h3>
+        <ul>
+          <li>Macy's <span>&mdash; retail systems</span></li>
+          <li>Disney <span>&mdash; consumer platforms</span></li>
+          <li>Recommendation and personalization</li>
+          <li>Sartori AI <span>&mdash; founder</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="fig" style="border:1px solid var(--rule);border-top:none">
+      <figcaption><span class="fig-n">Fig. 2</span><span class="fig-t">Scale of delivery, in the units that actually differ</span></figcaption>
+      <svg viewBox="0 0 620 196" role="img" aria-label="Four measures of delivery scale: 18 teams led, 350-plus people led, 20-plus production AI systems delivered, and 28 million members reached on the Centene platform.">
+        <g>
+          <rect x="10" y="40" width="136" height="76" rx="5" fill="var(--surface)" stroke="var(--rule)" stroke-width="1"/>
+          <text class="vl" x="78" y="76" text-anchor="middle" style="font-size:26px" fill="var(--c1)">18</text>
+          <text class="nl" x="78" y="96" text-anchor="middle">teams led</text>
+        </g>
+        <path d="M152 78 L166 78" stroke="var(--rule)" stroke-width="1"/>
+        <path d="M162 74 L168 78 L162 82" fill="none" stroke="var(--rule)" stroke-width="1"/>
+        <g>
+          <rect x="172" y="34" width="136" height="88" rx="5" fill="var(--surface)" stroke="var(--rule)" stroke-width="1"/>
+          <text class="vl" x="240" y="76" text-anchor="middle" style="font-size:26px" fill="var(--c1)">350+</text>
+          <text class="nl" x="240" y="96" text-anchor="middle">people led</text>
+        </g>
+        <path d="M314 78 L328 78" stroke="var(--rule)" stroke-width="1"/>
+        <path d="M324 74 L330 78 L324 82" fill="none" stroke="var(--rule)" stroke-width="1"/>
+        <g>
+          <rect x="334" y="28" width="136" height="100" rx="5" fill="var(--surface)" stroke="var(--rule)" stroke-width="1"/>
+          <text class="vl" x="402" y="76" text-anchor="middle" style="font-size:26px" fill="var(--c1)">20+</text>
+          <text class="nl" x="402" y="96" text-anchor="middle">systems shipped</text>
+        </g>
+        <path d="M476 78 L490 78" stroke="var(--c2)" stroke-width="1.4"/>
+        <path d="M486 74 L492 78 L486 82" fill="none" stroke="var(--c2)" stroke-width="1.4"/>
+        <g>
+          <rect x="496" y="20" width="114" height="116" rx="5" fill="var(--c2-wash)" stroke="var(--c2)" stroke-width="1.6"/>
+          <text class="vl" x="553" y="76" text-anchor="middle" style="font-size:26px" fill="var(--c2)">28M+</text>
+          <text class="nl" x="553" y="96" text-anchor="middle">members reached</text>
+        </g>
+        <text class="nl" x="10" y="160">Each step is a different unit, so the boxes grow with the span of the work rather than with a shared scale.</text>
+        <text class="nl" x="10" y="178">Figures as stated by R. Michael Merritt.</text>
+      </svg>
+      <p class="fig-note">These are four different units &mdash; teams, people, systems, end users &mdash; so this is a progression rather than a chart, and the boxes are sized by span of responsibility rather than by a common axis. The honest reading is that the last number is the only one measured in end users, and it comes from a single healthcare platform rather than from the whole career.</p>
+    </figure>
+  </div>
+</section>
+
+<section id="quant">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <h2>Quantitative finance</h2>
+    </div>
+    <article class="card">
+      <div class="card-head">
+        <div class="card-meta">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M2 10 L9 4 M2 10 L9 16 M9 4 L16 2 M9 4 L16 9 M9 16 L16 11 M9 16 L16 18"/></g></svg>
+          <span class="dom">Full portfolio</span><span>Seven bodies of work</span><span>Separate site</span>
+        </div>
+        <h3 class="card-title">Pricing, risk and forecasting &mdash; with the limitations reported</h3>
+        <p class="card-q">Derivative pricing, stochastic volatility calibration, time-series econometrics and machine learning applied to real market data. The through-line is not that the models fit. It is that each result is reported with the amount of it that survives scrutiny.</p>
+      </div>
+      <div class="card-body">
+        <div class="blk">
+          <div class="blk-label">What it covers</div>
+          <ul class="chain">
+            <li><b>Pricing</b> CRR binomial and trinomial lattices, Longstaff&ndash;Schwartz least-squares Monte Carlo, barrier and Asian payoffs, Greeks by bump-and-reprice.</li>
+            <li><b>Stochastic volatility</b> Heston calibration with full-truncation Euler, Merton jump-diffusion with drift compensation, Bates, CIR short rates, Carr&ndash;Madan Fourier pricing as an independent check.</li>
+            <li><b>Econometrics</b> ADF unit-root testing, Engle&ndash;Granger cointegration, error-correction and vector error-correction models, Gaussian hidden Markov regime detection.</li>
+            <li><b>Machine learning</b> ridge with random Fourier features, PCR, CART, LDA, SVM, MLP and ensembles, with Clark&ndash;West and Pesaran&ndash;Timmermann implemented by hand.</li>
+          </ul>
+        </div>
+        <div class="blk">
+          <div class="blk-label">The habit worth hiring</div>
+          <p>An oracle-gap statistic that priced hindsight at <b>13.08 points of out-of-sample R&sup2;</b> on one model, establishing what any backtest must deduct when selection and evaluation share a sample.</p>
+          <p>A Heston calibration cross-checked against an independent Fourier engine, which returned <b>identical error from different parameters</b> &mdash; reported as non-identifiability rather than as success.</p>
+          <p>An R&sup2; of 0.999 reported as a <b>spurious-regression warning rather than a result</b>, with the insignificant error-correction term named as a real problem with the model.</p>
+        </div>
+      </div>
+      <figure class="fig">
+        <figcaption><span class="fig-n">Fig. 3</span><span class="fig-t">One result from the portfolio, with its own fragility beside it</span></figcaption>
+        <div class="fig-legend">
+          <span class="lg"><span class="sw sw-1"></span>Regime rotation strategy</span>
+          <span class="lg"><span class="sw sw-2"></span>Equity buy-and-hold</span>
+        </div>
+        <svg viewBox="0 0 620 190" role="img" aria-label="Sharpe ratios. The regime rotation strategy returns 1.71 out of sample against the equity benchmark's 0.86, but collapses to 0.22 when refitted with three states instead of two.">
+          <g class="gl">
+            <line x1="330" y1="22" x2="330" y2="150"/>
+            <line x1="460" y1="22" x2="460" y2="150"/>
+          </g>
+          <line class="zl" x1="200" y1="22" x2="200" y2="150"/>
+          <g class="ax" text-anchor="middle">
+            <text x="200" y="166">0</text>
+            <text x="330" y="166">0.5</text>
+            <text x="460" y="166">1.0</text>
+          </g>
+          <text class="ax" x="200" y="14">Sharpe ratio, out-of-sample</text>
+
+          <text class="rl" x="190" y="44" text-anchor="end">Regime rotation</text>
+          <rect x="200" y="32" width="444.6" height="18" rx="4" fill="var(--c1)"/>
+          <text class="vl-on" x="208" y="46">1.71</text>
+
+          <text class="rl" x="190" y="76" text-anchor="end">Equity benchmark</text>
+          <rect x="200" y="64" width="223.6" height="18" rx="4" fill="var(--c2)"/>
+          <text class="vl-on" x="208" y="78">0.86</text>
+
+          <line x1="36" y1="98" x2="600" y2="98" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text class="rl" x="190" y="122" text-anchor="end">Same model, three states</text>
+          <rect x="200" y="110" width="57.2" height="18" rx="4" fill="none" stroke="var(--c1)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text class="vl" x="265" y="124">0.22</text>
+        </svg>
+        <p class="fig-note">A two-state hidden Markov model on volatility log-changes drives a rotation between equity and Treasuries, returning an out-of-sample Sharpe of 1.71 against the benchmark's 0.86 over 5,472 trading days. The dashed bar is the same model refitted with three states, where the edge almost entirely disappears. Both numbers are on the page, because a strategy that depends on one discrete modeling choice is a finding about method rather than a tradeable system.</p>
+      </figure>
+      <div style="padding:1.2rem 1.45rem 1.4rem;border-top:1px solid var(--rule)">
+        <a class="linkcell" style="border:1px solid var(--c1);padding:1rem 1.2rem;display:block" href="./quant/">
+          <div class="lt" style="color:var(--c1)">Open the full quantitative finance portfolio &rarr;</div>
+          <div class="ld">Seven bodies of work, twelve figures, every result shown with its reported limitation</div>
+        </a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <h2>Applied machine learning lab</h2>
+    </div>
+    <p class="lede" style="margin-bottom:1.8rem">Sixteen end-to-end notebooks, each a complete problem rather than a tutorial fragment &mdash; business framing, data preparation, modeling, evaluation and a written debrief.</p>
+    <div class="lane">
+      <div class="lane-cell">
+        <h3>Regression &amp; forecasting</h3>
+        <ul>
+          <li>Home price prediction</li>
+          <li>PCA with linear regression</li>
+          <li>Bike-sharing demand prediction</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>Classification &amp; risk</h3>
+        <ul>
+          <li>Credit scoring for risk mitigation</li>
+          <li>Personal loan purchase prediction</li>
+          <li>Income group classification</li>
+          <li>Machine failure prediction, decision tree</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>Clustering &amp; segmentation</h3>
+        <ul>
+          <li>Centroid-based customer segmentation</li>
+          <li>Hierarchical clustering</li>
+          <li>Athletic product range segmentation</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>Vision &amp; audio</h3>
+        <ul>
+          <li>Computer vision project, full pipeline</li>
+          <li>Audio MNIST speech recognition</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>Life sciences &amp; civic</h3>
+        <ul>
+          <li>Gene expression cancer RNA-seq analysis</li>
+          <li>NYC food hub data analysis</li>
+          <li>Hospitality booking analysis</li>
+        </ul>
+      </div>
+      <div class="lane-cell">
+        <h3>LLM infrastructure</h3>
+        <ul>
+          <li>Llama 3 70B on AWS Inferentia2</li>
+          <li><span>Hugging Face Optimum, step-by-step deployment</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="fig" style="border:1px solid var(--rule);border-top:none">
+      <figcaption><span class="fig-n">Fig. 4</span><span class="fig-t">Technique coverage across the notebook portfolio</span></figcaption>
+      <svg viewBox="0 0 620 214" role="img" aria-label="Notebook count by technique family: classification and risk 4, regression and forecasting 3, clustering and segmentation 3, life sciences and civic 3, vision and audio 2, LLM infrastructure 1.">
+        <g class="gl">
+          <line x1="200" y1="22" x2="200" y2="170"/>
+          <line x1="300" y1="22" x2="300" y2="170"/>
+          <line x1="400" y1="22" x2="400" y2="170"/>
+          <line x1="500" y1="22" x2="500" y2="170"/>
+        </g>
+        <line class="zl" x1="200" y1="22" x2="200" y2="170"/>
+        <g class="ax" text-anchor="middle">
+          <text x="200" y="186">0</text>
+          <text x="300" y="186">1</text>
+          <text x="400" y="186">2</text>
+          <text x="500" y="186">3</text>
+          <text x="600" y="186">4</text>
+        </g>
+        <text class="ax" x="200" y="14">Notebooks</text>
+
+        <text class="rl" x="190" y="39" text-anchor="end">Classification &amp; risk</text>
+        <rect x="200" y="28" width="400" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="208" y="41">4</text>
+
+        <text class="rl" x="190" y="65" text-anchor="end">Regression &amp; forecasting</text>
+        <rect x="200" y="54" width="300" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="208" y="67">3</text>
+
+        <text class="rl" x="190" y="91" text-anchor="end">Clustering &amp; segmentation</text>
+        <rect x="200" y="80" width="300" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="208" y="93">3</text>
+
+        <text class="rl" x="190" y="117" text-anchor="end">Life sciences &amp; civic</text>
+        <rect x="200" y="106" width="300" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="208" y="119">3</text>
+
+        <text class="rl" x="190" y="143" text-anchor="end">Vision &amp; audio</text>
+        <rect x="200" y="132" width="200" height="16" rx="4" fill="var(--c2)"/>
+        <text class="vl-on" x="208" y="145">2</text>
+
+        <text class="rl" x="190" y="169" text-anchor="end">LLM infrastructure</text>
+        <rect x="200" y="158" width="100" height="16" rx="4" fill="var(--c2)"/>
+        <text class="vl-on" x="208" y="171">1</text>
+      </svg>
+      <p class="fig-note">The distribution is the useful part. Two thirds of the portfolio sits in classical supervised and unsupervised learning on tabular business data, which is where most enterprise value actually is, and the remainder covers vision, audio and large-model deployment. The amber bars mark the deep-learning end, which is the thinner side of the portfolio and is shown as such rather than averaged into the rest.</p>
+    </figure>
+  </div>
+</section>
+
+<section id="research">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <h2>Research &amp; intellectual property</h2>
+    </div>
+
+    <article class="card">
+      <div class="card-head">
+        <div class="card-meta">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 3 L16 3 L16 17 L4 17 Z"/><path d="M7 7 L13 7 M7 10 L13 10 M7 13 L10 13"/></g></svg>
+          <span class="dom">Peer-reviewed</span><span>ICICPE 2026 &middot; Chiang Mai</span><span>Oral presentation</span>
+        </div>
+        <h3 class="card-title">Beyond the Click</h3>
+        <p class="card-q">A wear-gap framework for measuring whether a recommended garment is actually worn, using doubly-robust estimation to separate the recommendation's causal effect from the selection effect that normally contaminates it.</p>
+      </div>
+      <div class="card-body">
+        <div class="blk">
+          <div class="blk-label">The problem</div>
+          <p>Fashion recommendation systems are evaluated on clicks and conversions, both of which are measured at the moment of purchase. The outcome that matters &mdash; whether the garment enters regular wear &mdash; happens weeks later and is almost never observed.</p>
+          <p>That gap between purchase signal and wear outcome is what the paper names and attempts to estimate.</p>
+        </div>
+        <div class="blk">
+          <div class="blk-label">The method</div>
+          <p>Doubly-robust estimation combines an outcome model with a propensity model so that the estimate stays consistent if <em>either one</em> is correctly specified, rather than requiring both.</p>
+          <p>That property is the reason it is the right tool here: recommendation data is observational, the assignment mechanism is unknown, and a single-model estimate would absorb the selection effect into the treatment effect.</p>
+        </div>
+      </div>
+      <figure class="fig">
+        <figcaption><span class="fig-n">Fig. 5</span><span class="fig-t">Where the measurement actually breaks</span></figcaption>
+        <svg viewBox="0 0 620 216" role="img" aria-label="A timeline showing recommendation, click, purchase and delivery as observed events, then a gap, then first wear, repeat wear and wardrobe integration as unobserved outcomes. The wear gap sits between delivery and first wear.">
+          <line x1="20" y1="104" x2="600" y2="104" stroke="var(--rule)" stroke-width="1.5"/>
+
+          <g>
+            <circle cx="50" cy="104" r="6" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+            <circle cx="140" cy="104" r="6" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+            <circle cx="230" cy="104" r="6" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+            <circle cx="320" cy="104" r="6" fill="var(--c1)" stroke="var(--surface-2)" stroke-width="2"/>
+          </g>
+          <g class="nl" text-anchor="middle" fill="var(--c1)">
+            <text x="50" y="88">recommend</text>
+            <text x="140" y="88">click</text>
+            <text x="230" y="88">purchase</text>
+            <text x="320" y="88">deliver</text>
+          </g>
+          <text class="vl" x="20" y="60" fill="var(--c1)">OBSERVED &mdash; what the system optimizes</text>
+
+          <g>
+            <circle cx="430" cy="104" r="6" fill="none" stroke="var(--c2)" stroke-width="2" stroke-dasharray="3 2"/>
+            <circle cx="510" cy="104" r="6" fill="none" stroke="var(--c2)" stroke-width="2" stroke-dasharray="3 2"/>
+            <circle cx="580" cy="104" r="6" fill="none" stroke="var(--c2)" stroke-width="2" stroke-dasharray="3 2"/>
+          </g>
+          <g class="nl" text-anchor="middle" fill="var(--c2)">
+            <text x="430" y="130">first wear</text>
+            <text x="510" y="130">repeat wear</text>
+            <text x="580" y="130">integration</text>
+          </g>
+          <text class="vl" x="600" y="160" text-anchor="end" fill="var(--c2)">UNOBSERVED &mdash; what actually matters</text>
+
+          <rect x="330" y="94" width="94" height="20" fill="var(--c2-wash)"/>
+          <text class="vl" x="377" y="108" text-anchor="middle" fill="var(--c2)">wear gap</text>
+
+          <text class="nl" x="20" y="194">Doubly-robust estimation targets the unobserved side without assuming the assignment mechanism is known.</text>
+        </svg>
+        <p class="fig-note">Everything to the left of the shaded band is logged automatically and is what recommendation systems are trained and graded on. Everything to the right determines whether the recommendation was any good, and almost none of it is captured. Naming that interval and proposing an estimator for it is the contribution &mdash; and it is also the intellectual root of the returns work at Sartori, where an unworn garment comes back instead of simply going unworn.</p>
+      </figure>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <div class="card-meta">
+          <svg class="glyph" viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M10 2 L17 6 L17 12 C17 15, 13 18, 10 18 C7 18, 3 15, 3 12 L3 6 Z"/></g><path d="M7 10 L9 12 L13 7.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="dom">Patents &amp; filings</span><span>Recommendation systems &middot; Social graph inference</span>
+        </div>
+        <h3 class="card-title">Intellectual property</h3>
+      </div>
+      <div class="card-body">
+        <div class="blk">
+          <div class="blk-label">Inventions</div>
+          <ul class="chain">
+            <li><b>Adaptive Reinforcement Learning for Fashion Recommendation Systems</b> &mdash; 2024. Reinforcement learning applied to garment recommendation, the technical foundation under Sartori's retrieval stack.</li>
+            <li><b>Method and apparatus for creating an ephemeral social network</b> &mdash; 2014. Transient social graph formation from real-world co-presence.</li>
+          </ul>
+        </div>
+        <div class="blk">
+          <div class="blk-label">Collaborative research</div>
+          <p>Contributed to foundational research and technical analysis supporting <b>more than twenty patent filings</b> with Dr. Alvin Chin, PhD, of the Discovery Partners Institute at the University of Illinois System.</p>
+          <p>The work covered proximity-based recommendation, mobile social graph inference and privacy-aware AI networking &mdash; including prior data analysis, co-design of system architectures, and algorithms that infer social ties from real-time co-presence under privacy-preserving protocols.</p>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="credentials">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <h2>Credentials</h2>
+    </div>
+    <p class="lede" style="margin-bottom:1.5rem">Six graduate credentials across computing, business, AI and quantitative finance, plus thirty-eight professional certifications.</p>
+    <div class="edu">
+      <div class="edu-row">
+        <div class="edu-deg">M.S. Information Technology &mdash; Generative AI, Data Science &amp; LLM</div>
+        <div class="edu-sch">Heinz College, Carnegie Mellon University</div>
+        <div class="edu-gpa">GPA 3.9 / 4.0</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-deg">Post-Graduate Fellowship &mdash; Innovation Management &amp; Entrepreneurship</div>
+        <div class="edu-sch">The Wharton School, University of Pennsylvania</div>
+        <div class="edu-gpa">GPA 4.0 / 4.0</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-deg">Post-Graduate Program &mdash; Artificial Intelligence &amp; Machine Learning</div>
+        <div class="edu-sch">McCombs School of Business, University of Texas at Austin</div>
+        <div class="edu-gpa">GPA 4.1 / 4.0</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-deg">M.B.A. &mdash; Data Analytics Specialization</div>
+        <div class="edu-sch">Gies College of Business, University of Illinois</div>
+        <div class="edu-gpa">GPA 3.75 / 4.0</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-deg">M.S. Financial Engineering &mdash; Quantitative Finance, Modeling &amp; Algorithmic Trading</div>
+        <div class="edu-sch">WorldQuant University</div>
+        <div class="edu-gpa">GPA 4.0 / 4.0</div>
+      </div>
+      <div class="edu-row">
+        <div class="edu-deg">B.S. Computer Engineering &mdash; Artificial Intelligence</div>
+        <div class="edu-sch">University of Illinois, Urbana-Champaign</div>
+        <div class="edu-gpa"></div>
+      </div>
+    </div>
+
+    <figure class="fig" style="border:1px solid var(--rule);border-top:none">
+      <figcaption><span class="fig-n">Fig. 6</span><span class="fig-t">Thirty-eight certifications, by domain</span></figcaption>
+      <div class="fig-legend">
+        <span class="lg"><span class="sw sw-1"></span>Technical</span>
+        <span class="lg"><span class="sw sw-2"></span>Strategy, product &amp; leadership</span>
+      </div>
+      <svg viewBox="0 0 620 228" role="img" aria-label="Certification count by domain: AI and machine learning 8, data and analytics 6, product management 6, cloud and engineering 6, business strategy and leadership 6, AI governance and ethics 4, blockchain and emerging 2.">
+        <g class="gl">
+          <line x1="256" y1="22" x2="256" y2="184"/>
+          <line x1="342" y1="22" x2="342" y2="184"/>
+          <line x1="428" y1="22" x2="428" y2="184"/>
+          <line x1="514" y1="22" x2="514" y2="184"/>
+        </g>
+        <line class="zl" x1="212" y1="22" x2="212" y2="184"/>
+        <g class="ax" text-anchor="middle">
+          <text x="212" y="200">0</text>
+          <text x="256" y="200">2</text>
+          <text x="342" y="200">4</text>
+          <text x="428" y="200">6</text>
+          <text x="514" y="200">8</text>
+        </g>
+        <text class="ax" x="212" y="14">Certifications</text>
+
+        <text class="rl" x="202" y="39" text-anchor="end">AI &amp; machine learning</text>
+        <rect x="212" y="28" width="344" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="220" y="41">8</text>
+
+        <text class="rl" x="202" y="65" text-anchor="end">Data &amp; analytics</text>
+        <rect x="212" y="54" width="258" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="220" y="67">6</text>
+
+        <text class="rl" x="202" y="91" text-anchor="end">Cloud &amp; engineering</text>
+        <rect x="212" y="80" width="258" height="16" rx="4" fill="var(--c1)"/>
+        <text class="vl-on" x="220" y="93">6</text>
+
+        <text class="rl" x="202" y="117" text-anchor="end">Product management</text>
+        <rect x="212" y="106" width="258" height="16" rx="4" fill="var(--c2)"/>
+        <text class="vl-on" x="220" y="119">6</text>
+
+        <text class="rl" x="202" y="143" text-anchor="end">Strategy &amp; leadership</text>
+        <rect x="212" y="132" width="258" height="16" rx="4" fill="var(--c2)"/>
+        <text class="vl-on" x="220" y="145">6</text>
+
+        <text class="rl" x="202" y="169" text-anchor="end">AI governance &amp; ethics</text>
+        <rect x="212" y="158" width="172" height="16" rx="4" fill="var(--c2)"/>
+        <text class="vl-on" x="220" y="171">4</text>
+
+        <text class="rl" x="202" y="195" text-anchor="end" style="fill:var(--ink-3)">Blockchain &amp; emerging</text>
+        <rect x="212" y="184" width="86" height="16" rx="4" fill="var(--c1)" opacity="0.5"/>
+        <text class="vl" x="306" y="197">2</text>
+      </svg>
+      <p class="fig-note">Twenty-two of the thirty-eight are technical and sixteen are strategy, product or leadership, which is the distribution you would expect from someone who writes code and also owns the roadmap. Issuers include IBM, AWS, Microsoft, Meta, Duke, Johns Hopkins, Wharton, Pendo and the Linux Foundation. The point of the chart is shape rather than volume: a certification count on its own proves persistence, while the balance across domains is what suggests the work is actually cross-functional.</p>
+    </figure>
+  </div>
+</section>
+
+<section id="links">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">08</div>
+      <h2>Where the work lives</h2>
+    </div>
+    <div class="linkgrid">
+      <a class="linkcell" href="./quant/">
+        <div class="lt">Quantitative finance portfolio</div>
+        <div class="ld">Seven bodies of work &middot; twelve figures</div>
+      </a>
+      <a class="linkcell" href="https://www.linkedin.com/in/robert-merritt-mba-cpm-0559ab2a7">
+        <div class="lt">LinkedIn</div>
+        <div class="ld">linkedin.com/in/robert-merritt-mba-cpm</div>
+      </a>
+      <a class="linkcell" href="https://github.com/bob-michael-prodmgmt/sandbox">
+        <div class="lt">GitHub sandbox</div>
+        <div class="ld">github.com/bob-michael-prodmgmt/sandbox</div>
+      </a>
+      <a class="linkcell" href="https://www.sartori.ai">
+        <div class="lt">Sartori AI</div>
+        <div class="ld">sartori.ai</div>
+      </a>
+      <a class="linkcell" href="https://enterprise.sartori.ai">
+        <div class="lt">Sartori enterprise</div>
+        <div class="ld">enterprise.sartori.ai</div>
+      </a>
+      <a class="linkcell" href="https://www.linkedin.com/company/sartori-inc/">
+        <div class="lt">Sartori AI on LinkedIn</div>
+        <div class="ld">linkedin.com/company/sartori-inc</div>
+      </a>
+      <a class="linkcell" href="https://medium.com/@bob.michael.prodmgmt/scaling-ai-in-the-enterprise-environment-navigating-change-and-building-trust-fe983cd01a20">
+        <div class="lt">Scaling AI in the Enterprise</div>
+        <div class="ld">Essay on change management and trust</div>
+      </a>
+      <a class="linkcell" href="https://polsky.uchicago.edu/2025/10/24/the-polsky-center-welcomes-the-2025-innovate2market-cohort/">
+        <div class="lt">Polsky Center feature</div>
+        <div class="ld">2025 Innovate2Market cohort, University of Chicago</div>
+      </a>
+      <a class="linkcell" href="https://bob-michael-prodmgmt.github.io/Sartori-AI-Investor-Deck/">
+        <div class="lt">Sartori investor deck</div>
+        <div class="ld">Long-form presentation</div>
+      </a>
+      <a class="linkcell" href="https://www.credly.com/go/LT5ezYZsVP32qiJ1Y0VmvQ">
+        <div class="lt">Credly credentials</div>
+        <div class="ld">Verified certification wallet</div>
+      </a>
+      <a class="linkcell" href="https://certificates.emeritus.org/profile/rmichaelmerritt183767/wallet">
+        <div class="lt">Wharton certificates</div>
+        <div class="ld">Post-graduate credential wallet</div>
+      </a>
+      <a class="linkcell" href="https://www.coursera.org/learner/rmichael-merritt">
+        <div class="lt">Coursera learning record</div>
+        <div class="ld">coursera.org/learner/rmichael-merritt</div>
+      </a>
+      <a class="linkcell" href="https://www.mygreatlearning.com/eportfolio/r--michael-merritt">
+        <div class="lt">Great Learning portfolio</div>
+        <div class="ld">AI/ML program eportfolio</div>
+      </a>
+      <a class="linkcell" href="https://ckdk-strategix.com/aiml-product-portfolio">
+        <div class="lt">AI/ML product portfolio</div>
+        <div class="ld">CKDK Strategix</div>
+      </a>
+      <a class="linkcell" href="https://bob-michael-prodmgmt.github.io/r_michael_merritt_website/">
+        <div class="lt">Previous profile site</div>
+        <div class="ld">Earlier multi-page version, kept live</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h2 style="font-size:1.35rem;margin-bottom:0.9rem">Contact</h2>
+        <div class="contact-line">
+          <span id="email">r.michael@sartori.ai</span>
+          <span>Chicago, Illinois</span>
+        </div>
+        <button class="copy-btn" id="copy" type="button">Copy email</button>
+      </div>
+      <div class="asof">
+        <div>R. Michael Merritt</div>
+        <div>Founder &amp; CEO, Sartori AI</div>
+        <div style="margin-top:0.45rem">Updated 3 November 2026</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var c = document.getElementById('graph');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  function tok(v, fb) {
+    var s = getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    return s || fb;
+  }
+  function draw() {
+    var host = c.parentElement;
+    var w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = Math.floor(w * dpr);
+    c.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    var seed = 73915;
+    function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+
+    var n = Math.max(34, Math.min(80, Math.round(w / 16)));
+    var nodes = [];
+    for (var i = 0; i < n; i++) {
+      nodes.push({ x: rnd() * w, y: rnd() * h, r: 1.1 + rnd() * 2.2 });
+    }
+    var accent = tok('--c1', '#007E84');
+    var linkMax = Math.min(w, h) * 0.26;
+
+    ctx.lineWidth = 0.7;
+    for (var a = 0; a < nodes.length; a++) {
+      for (var b = a + 1; b < nodes.length; b++) {
+        var dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < linkMax) {
+          ctx.globalAlpha = 0.11 * (1 - d / linkMax);
+          ctx.strokeStyle = accent;
+          ctx.beginPath();
+          ctx.moveTo(nodes[a].x, nodes[a].y);
+          ctx.lineTo(nodes[b].x, nodes[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (var k = 0; k < nodes.length; k++) {
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = accent;
+      ctx.beginPath();
+      ctx.arc(nodes[k].x, nodes[k].y, nodes[k].r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  draw();
+  var to;
+  window.addEventListener('resize', function () { clearTimeout(to); to = setTimeout(draw, 160); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', draw);
+  }
+})();
+
+(function () {
+  var btn = document.getElementById('copy');
+  var el = document.getElementById('email');
+  if (!btn || !el) return;
+  btn.addEventListener('click', function () {
+    var txt = el.textContent.trim();
+    function restore() { setTimeout(function () { btn.textContent = 'Copy email'; }, 1900); }
+    function select() {
+      try {
+        var r = document.createRange();
+        r.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+      } catch (e) {}
+      btn.textContent = 'Select and copy';
+      restore();
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function () {
+          btn.textContent = 'Copied';
+          restore();
+        }, select);
+      } else { select(); }
+    } catch (e) { select(); }
+  });
+})();
+</script>
+  </body>
+</html>
