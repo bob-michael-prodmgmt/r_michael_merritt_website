@@ -1,0 +1,1780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fish Bowl — Sartori AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Albert+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink0:#05070F; --ink1:#0A0F1E; --ink2:#101830;
+  --line:rgba(150,170,220,.18); --line-hi:rgba(150,170,220,.34);
+  --silver:#C6D0E2; --silver-hi:#F2F6FD; --silver-lo:#95A3BD;
+  --cy:#35C7F0; --gn:#7BD98A; --am:#F4A83B; --mg:#E1509E; --vi:#8B5CF6;
+  --spectral:linear-gradient(135deg,#35C7F0 0%,#7BD98A 24%,#F4A83B 50%,#E1509E 76%,#8B5CF6 100%);
+  --illini-orange:#FF5F05; --illini-blue:#13294B;
+}
+*{box-sizing:border-box;min-height:0}
+html,body{margin:0;padding:0;min-height:100%;background:#000;color:var(--silver);
+  font-family:'Albert Sans',system-ui,sans-serif}
+body.mode-deck{height:100%;overflow:hidden}
+body.mode-scroll{overflow-y:auto;overflow-x:hidden}
+
+/* ---------- stage ---------- */
+#deck{background:#000}
+body.mode-deck #deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+body.mode-scroll #deck{position:static;display:block;padding:20px 20px 96px}
+.slide{
+  display:none; position:relative;
+  container-type:inline-size;
+  background:
+    radial-gradient(760px 420px at 10% 0%, rgba(53,199,240,.06), transparent 60%),
+    radial-gradient(760px 460px at 92% 100%, rgba(225,80,158,.07), transparent 60%),
+    var(--ink0);
+  padding:clamp(16px,3.1cqi,42px) clamp(18px,3.8cqi,52px) clamp(14px,2.6cqi,34px);
+  flex-direction:column; overflow:hidden;
+}
+.fitwrap{flex:1 1 auto;min-height:0;width:100%;display:flex;flex-direction:column;
+  gap:clamp(8px,1.3cqi,16px);transform-origin:top center}
+body.mode-deck .slide{width:min(100vw,177.78vh);height:min(56.25vw,100vh)}
+body.mode-deck .slide.on{display:flex}
+/* stacked reading view — every slide framed, with real separation */
+body.mode-scroll .slide{
+  display:flex; width:100%; max-width:1360px; margin:0 auto clamp(22px,3vw,44px);
+  aspect-ratio:16/9; border:1px solid var(--line-hi); border-radius:16px;
+  box-shadow:0 20px 56px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.6)}
+body.mode-scroll .slide.bleed,body.mode-scroll .slide.title-slide,
+body.mode-scroll .slide.actdiv{overflow:hidden}
+
+/* frosted treatment for concept slides */
+.slide.concept{
+  background:
+    radial-gradient(900px 520px at 50% -10%, rgba(139,92,246,.16), transparent 62%),
+    radial-gradient(700px 420px at 8% 100%, rgba(53,199,240,.10), transparent 60%),
+    linear-gradient(180deg,#0C1324,#070A14);
+}
+.slide.concept::before{
+  content:"";position:absolute;inset:clamp(12px,2.2cqi,28px);border-radius:20px;
+  background:rgba(170,182,204,.045);
+  backdrop-filter:blur(26px) saturate(135%);-webkit-backdrop-filter:blur(26px) saturate(135%);
+  border:1px solid rgba(190,205,240,.16);pointer-events:none;
+}
+.slide.concept > *{position:relative;z-index:1}
+.slide.concept{padding:clamp(26px,4.6cqi,62px) clamp(30px,5.4cqi,74px) clamp(22px,3.6cqi,46px)}
+
+/* ---------- type ---------- */
+.eyebrow{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:clamp(8px,.92cqi,12px);
+  letter-spacing:.26em;text-transform:uppercase;color:var(--silver-lo);
+  display:flex;align-items:center;gap:12px;flex:none}
+.eyebrow .dot{width:7px;height:7px;border-radius:2px;background:var(--spectral);flex:none}
+.eyebrow .n{color:var(--silver)}
+h1{font-family:'Unbounded',system-ui,sans-serif;font-weight:700;color:var(--silver-hi);
+  font-size:clamp(17px,3.05cqi,37px);line-height:1.13;letter-spacing:-.01em;
+  text-wrap:balance;margin:0;flex:none}
+h1.big{font-size:clamp(22px,4.4cqi,53px)}
+.grad{background:var(--spectral);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:clamp(11.5px,1.4cqi,18px);color:var(--silver);line-height:1.45;max-width:92%}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+b,strong{color:var(--silver-hi);font-weight:600}
+
+/* ---------- layout helpers ---------- */
+.body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:clamp(8px,1.3cqi,16px);
+  justify-content:center}
+/* content hugs itself and floats in the optical centre — no stretched empty cards */
+.grid{display:grid;gap:clamp(9px,1.35cqi,18px);flex:1 1 auto;min-height:0;
+  align-content:center;grid-auto-rows:min-content}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+.rows2{grid-template-rows:auto auto}.rows3{grid-template-rows:repeat(3,auto)}
+.center{align-items:center;justify-content:center;text-align:center}
+.card{
+  --ac:var(--cy);
+  border-radius:13px;border:1px solid rgba(150,170,220,.18);
+  background:linear-gradient(180deg,var(--ink1),rgba(10,15,30,.22));
+  padding:clamp(13px,1.85cqi,25px) clamp(15px,2.25cqi,30px);
+  display:flex;flex-direction:column;gap:clamp(4px,.7cqi,9px);min-height:0}
+.card.lit{border-color:color-mix(in srgb,var(--ac) 46%,transparent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 11%,transparent),rgba(10,15,30,.22))}
+.card.dim{opacity:.42}
+.ac2{--ac:var(--gn)}.ac3{--ac:var(--am)}.ac4{--ac:var(--mg)}.ac5{--ac:var(--vi)}
+.ctitle{font-family:'Unbounded',system-ui,sans-serif;font-weight:600;color:var(--silver-hi);
+  font-size:clamp(12.5px,1.74cqi,22.5px);line-height:1.2}
+/* gradient glyph that heads a card */
+.ico{width:clamp(26px,3.3cqi,42px);height:clamp(26px,3.3cqi,42px);flex:none;margin-bottom:2px}
+.ico svg{width:100%;height:100%;display:block}
+.ctag{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:clamp(9.5px,1.02cqi,13px);
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ac);font-weight:500}
+.ctext{font-size:clamp(12px,1.46cqi,19.5px);color:var(--silver);line-height:1.45}
+.big-num{font-family:'Unbounded',system-ui,sans-serif;font-weight:700;color:var(--silver-hi);
+  font-size:clamp(18px,3.3cqi,42px);line-height:1}
+.mid-num{font-family:'Unbounded',system-ui,sans-serif;font-weight:700;
+  font-size:clamp(14px,2.2cqi,27px);line-height:1;color:var(--silver-hi)}
+ul.tick{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:clamp(4px,.7cqi,9px)}
+ul.tick li{position:relative;padding-left:clamp(14px,1.6cqi,20px);
+  font-size:clamp(12px,1.46cqi,19.5px);line-height:1.45;color:var(--silver)}
+ul.tick li::before{content:"";position:absolute;left:0;top:.52em;width:6px;height:6px;
+  border-radius:2px;background:var(--spectral)}
+
+/* kicker */
+.kicker{flex:none;margin-top:clamp(6px,1cqi,14px);border-top:2px solid transparent;border-image:var(--spectral) 1;
+  padding:clamp(9px,1.4cqi,16px) clamp(10px,2cqi,24px) 0;text-align:center;
+  font-family:'Unbounded',system-ui,sans-serif;font-weight:600;letter-spacing:-.01em;
+  font-size:clamp(12.5px,1.98cqi,24px);color:var(--silver-hi);line-height:1.3}
+
+/* institution lockups — set in type, since university crests are trademarked */
+.lockrow{display:flex;align-items:center;justify-content:center;gap:clamp(16px,3cqi,44px);
+  flex:none;flex-wrap:wrap;padding-top:clamp(2px,.6cqi,8px)}
+.lock{display:flex;flex-direction:column;gap:3px;text-align:center}
+.lock .lk1{font-family:'Unbounded',sans-serif;font-weight:600;color:var(--silver-hi);
+  font-size:clamp(13px,1.95cqi,26px);letter-spacing:-.01em;line-height:1.15}
+.lock .lk2{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,.88cqi,11.5px);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--silver-lo)}
+.lockdot{width:7px;height:7px;border-radius:2px;background:var(--spectral);flex:none}
+
+/* photographic backing */
+.bgphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  opacity:.38;filter:saturate(1.2) contrast(1.05)}
+.bgveil{position:absolute;inset:0;z-index:1;background:
+  linear-gradient(180deg,rgba(5,7,15,.9) 0%,rgba(5,7,15,.82) 45%,rgba(5,7,15,.95) 100%)}
+.slide.hasphoto > *:not(.bgphoto):not(.bgveil){position:relative;z-index:2}
+
+/* infographic band */
+.band{flex:0 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;width:100%}
+.band svg{width:100%;height:auto;max-height:clamp(130px,30cqi,360px)}
+.slide.bandgrid .band svg{max-height:clamp(80px,15.5cqi,186px)}
+.slide.bandgrid .grid{flex:0 1 auto}
+
+/* chain / flow */
+.chain{display:flex;align-items:center;gap:clamp(4px,.7cqi,9px);flex:1 1 auto;min-height:0}
+.node{flex:1 1 0;border-radius:11px;border:1px solid rgba(150,170,220,.2);
+  background:linear-gradient(180deg,var(--ink1),rgba(10,15,30,.2));
+  padding:clamp(7px,1.05cqi,14px) clamp(6px,.9cqi,12px);
+  display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:center;min-width:0}
+.node .nt{font-family:'Unbounded',sans-serif;font-weight:600;color:var(--silver-hi);
+  font-size:clamp(10px,1.22cqi,16px);line-height:1.2}
+.node .nd{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,.82cqi,11px);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--silver-lo)}
+.node.hl{border-color:rgba(53,199,240,.5);background:linear-gradient(180deg,rgba(53,199,240,.12),rgba(10,15,30,.2))}
+.arrow{flex:none;display:flex;align-items:center;color:var(--silver-lo);
+  font-size:clamp(9px,1.1cqi,15px)}
+
+/* logo mark */
+.mark{position:absolute;right:clamp(14px,2.4cqi,30px);top:clamp(12px,2.1cqi,26px);
+  width:clamp(20px,2.7cqi,34px);height:auto;opacity:.95;z-index:3;pointer-events:none}
+.slide.concept .mark{opacity:.55}
+
+/* live / embed slides */
+.livegrid{display:grid;grid-template-columns:.92fr 1.55fr;gap:clamp(10px,1.5cqi,20px);
+  flex:1 1 auto;min-height:0}
+.popout{position:absolute;right:10px;top:10px;z-index:4}
+.framecol{display:flex;flex-direction:column;gap:clamp(5px,.7cqi,9px);min-height:0}
+.framecap{flex:none;font-family:'JetBrains Mono',monospace;font-size:clamp(8px,.86cqi,11.5px);
+  letter-spacing:.06em;color:var(--silver-lo);line-height:1.45}
+.framecap b{color:var(--silver);font-weight:500}
+.frame{flex:1 1 auto;min-height:0;border-radius:12px;overflow:hidden;
+  border:1px solid var(--line-hi);background:var(--ink1);position:relative}
+.frame iframe{width:100%;height:100%;border:0;display:block;background:var(--ink1)}
+.frame .fallback{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;
+  background:var(--ink1);z-index:0}
+.frame iframe{position:relative;z-index:1}
+.btnrow{display:flex;gap:clamp(6px,1cqi,12px);flex-wrap:wrap;flex:none}
+.btn{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,.86cqi,11.5px);
+  letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--silver-hi);
+  border:1px solid var(--line-hi);border-radius:999px;padding:7px 15px;
+  background:rgba(150,170,220,.07);transition:.15s}
+.btn:hover{border-color:rgba(53,199,240,.55);background:rgba(53,199,240,.13)}
+.btn.pri{border-color:transparent;background:var(--spectral);color:#05070F;font-weight:600}
+
+/* qr */
+.qr{width:clamp(70px,11cqi,150px);height:auto;border-radius:10px;border:1px solid var(--line-hi);display:block}
+
+/* title slide */
+.title-slide{padding:0;justify-content:flex-end}
+.title-slide .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.title-slide .scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(5,7,15,.22) 0%,rgba(5,7,15,.55) 55%,rgba(5,7,15,.94) 100%)}
+.title-slide .tcontent{position:relative;z-index:2;padding:clamp(20px,4cqi,56px);display:flex;
+  flex-direction:column;gap:clamp(6px,1cqi,14px)}
+
+/* act divider */
+.slide.actdiv{padding:0;justify-content:flex-end}
+.actdiv .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  filter:saturate(1.15) contrast(1.05)}
+.actdiv .scrim{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(100deg,rgba(5,7,15,.97) 0%,rgba(5,7,15,.9) 38%,rgba(5,7,15,.55) 72%,rgba(5,7,15,.42) 100%)}
+.actdiv .bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--spectral);z-index:3}
+.actdiv .acontent{position:relative;z-index:2;padding:clamp(22px,4.4cqi,62px);
+  display:flex;flex-direction:column;gap:clamp(6px,1cqi,14px);max-width:72%}
+.actdiv .anum{font-family:'JetBrains Mono',monospace;font-size:clamp(9px,1.05cqi,14px);
+  letter-spacing:.34em;color:var(--silver-lo);text-transform:uppercase}
+.actdiv h1{font-size:clamp(20px,4.3cqi,52px)}
+.actdiv .asub{font-size:clamp(10px,1.3cqi,17px);color:var(--silver);line-height:1.45;max-width:90%}
+
+/* bmc */
+.bmc{display:grid;gap:clamp(5px,.7cqi,10px);flex:1 1 auto;min-height:0;
+  grid-template-columns:repeat(5,1fr);grid-template-rows:1.5fr 1.5fr 1fr;
+  grid-template-areas:
+    "kp ka vp cr cs"
+    "kp kr vp ch cs"
+    "cost cost cost rev rev"}
+.bmc .kp{grid-area:kp}.bmc .ka{grid-area:ka}.bmc .kr{grid-area:kr}
+.bmc .vp{grid-area:vp}.bmc .cr{grid-area:cr}.bmc .ch{grid-area:ch}
+.bmc .cs{grid-area:cs}.bmc .cost{grid-area:cost}.bmc .rev{grid-area:rev}
+.bmc .b{border-radius:10px;border:1px solid rgba(150,170,220,.2);
+  background:linear-gradient(180deg,var(--ink1),rgba(10,15,30,.2));
+  padding:clamp(7px,.95cqi,13px) clamp(8px,1.05cqi,14px);display:flex;flex-direction:column;
+  gap:clamp(3px,.42cqi,6px);min-height:0}
+.bmc .b h4{margin:0;font-family:'JetBrains Mono',monospace;font-weight:500;
+  font-size:clamp(7.5px,.8cqi,10.5px);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--silver-lo);flex:none}
+.bmc .b p{margin:0;font-size:clamp(10px,1.2cqi,16px);line-height:1.38;color:var(--silver)}
+.bmc .b.vp p,.bmc .b.cs p{font-size:clamp(9.5px,1.14cqi,15px)}
+.bmc .b.chg{border-color:rgba(225,80,158,.55);background:linear-gradient(180deg,rgba(225,80,158,.14),rgba(10,15,30,.2))}
+.bmc .b.keep{border-color:rgba(123,217,138,.4);background:linear-gradient(180deg,rgba(123,217,138,.08),rgba(10,15,30,.2))}
+
+/* image slide */
+.imgwrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.imgwrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px}
+.slide.bleed{padding:0}
+.slide.bleed img{width:100%;height:100%;object-fit:contain;display:block}
+
+/* HUD */
+#hud{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:50;
+  display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;
+  color:var(--silver);background:rgba(10,15,30,.9);border:1px solid var(--line-hi);
+  box-shadow:0 10px 34px rgba(0,0,0,.7);backdrop-filter:blur(14px);
+  opacity:1;transition:opacity .3s}
+#hud.dim{opacity:.18}
+#hud:hover{opacity:1}
+#hud button{font:inherit;letter-spacing:.12em;color:var(--silver);background:rgba(150,170,220,.08);
+  border:1px solid var(--line-hi);border-radius:999px;padding:6px 13px;cursor:pointer;
+  transition:.15s;white-space:nowrap}
+#hud button:hover{color:#05070F;background:var(--spectral);border-color:transparent}
+#hud button.nav{font-size:14px;padding:4px 14px;line-height:1.1}
+#hud #cnt{min-width:66px;text-align:center;color:var(--silver-hi)}
+#hud .sep{width:1px;height:18px;background:var(--line-hi)}
+body.mode-scroll #hud .deckonly{display:none}
+/* click zones for advancing without keyboard focus */
+.zone{position:fixed;top:0;bottom:46px;width:12%;z-index:40;cursor:pointer;border:0;
+  background:transparent;opacity:0;transition:opacity .2s}
+.zone:hover{opacity:1;background:linear-gradient(90deg,rgba(53,199,240,.14),transparent)}
+#zoneR{right:0;background:linear-gradient(270deg,rgba(53,199,240,.14),transparent)}
+#zoneL{left:0}
+body.mode-scroll .zone{display:none}
+#hint{position:fixed;left:50%;transform:translateX(-50%);top:14px;z-index:51;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  color:var(--silver-lo);background:rgba(10,15,30,.92);border:1px solid var(--line);
+  border-radius:999px;padding:6px 14px;transition:opacity .4s}
+#hint.gone{opacity:0;pointer-events:none}
+body.mode-scroll #hint{display:none}
+#prog{position:fixed;left:0;top:0;height:2px;background:var(--spectral);z-index:60;transition:width .25s}
+
+/* overview */
+#ov{position:fixed;inset:0;background:rgba(3,5,10,.97);z-index:100;display:none;
+  overflow:auto;padding:26px;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;
+  align-content:start}
+#ov.on{display:grid}
+.ovc{border:1px solid var(--line);border-radius:9px;padding:11px;cursor:pointer;
+  background:var(--ink1);display:flex;flex-direction:column;gap:5px;transition:.15s}
+.ovc:hover{border-color:rgba(53,199,240,.5);background:rgba(53,199,240,.08)}
+.ovc .i{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--silver-lo)}
+.ovc .t{font-size:11.5px;line-height:1.3;color:var(--silver-hi);font-weight:600}
+.ovc .a{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--cy)}
+
+@media (max-width:820px){
+  html,body{overflow:auto!important;height:auto}
+  #deck{position:static!important;display:block!important;padding:12px 10px 90px!important}
+  .slide,body.mode-deck .slide,body.mode-scroll .slide{
+    width:100%;height:auto;aspect-ratio:auto;container-type:normal;
+    padding:20px 16px 18px;gap:12px;margin:0 0 18px;border-radius:14px;
+    border:1px solid var(--line-hi);display:flex}
+  .grid{grid-template-columns:1fr!important;grid-template-rows:none!important}
+  .bmc{grid-template-columns:1fr;grid-template-rows:none;grid-template-areas:none}
+  .bmc .b{grid-area:auto!important}
+  .chain{flex-wrap:wrap}.arrow{display:none}.node{flex:1 1 44%}
+  h1{font-size:20px}h1.big{font-size:26px}.kicker{font-size:15px}
+  .frame{height:300px;flex:none}
+  .livegrid{grid-template-columns:1fr}
+  .zone,#hint{display:none}
+  #hud{bottom:10px;font-size:10px;gap:5px;padding:5px 7px}
+  #hud .deckonly,#hud .sep{display:none}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="deck">
+<!-- 1 TITLE -->
+<section class="slide title-slide" data-act="Open" data-title="Title">
+  <img class="photo" src="assets/title.jpg" alt="">
+  <div class="scrim"></div>
+  <div class="tcontent">
+    <div class="eyebrow"><span class="dot"></span><span class="n">Fish Bowl</span><span>University of Illinois · November 2026</span></div>
+    <h1 class="big">From a 54-hour weekend to a <span class="grad">funded wedge.</span></h1>
+    <div class="sub" style="font-size:clamp(11px,1.45cqi,19px)">R. Michael Merritt — Co-Founder &amp; CxTO, Sartori AI<br>
+    <span class="mono" style="font-size:.78em;letter-spacing:.14em;color:var(--silver-lo)">BS COMPUTER ENGINEERING — AI · MBA, GIES COLLEGE OF BUSINESS</span></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-act="Open" data-title="I sat where you're sitting — twice">
+  <div class="eyebrow"><span class="dot"></span><span class="n">00</span><span>Where this starts</span></div>
+  <h1>I sat where you're sitting. <span class="grad">Twice.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">First time</span><span class="ctitle">B.S. Computer Engineering — Artificial Intelligence</span>
+      <span class="ctext">Illinois. The machine learning started here, in a classroom, long before it was a company.</span></div>
+    <div class="card ac3 lit"><span class="ctag">Second time</span><span class="ctitle">MBA — Gies College of Business</span>
+      <span class="ctext">Data analytics specialization. I came back for the half of the job engineering doesn't teach you.</span></div>
+    <div class="card ac5 lit"><span class="ctag">Today</span><span class="ctitle">Four ventures. One exit. Still pre-seed.</span>
+      <span class="ctext">Everything in this deck happened between those two degrees and this room.</span></div>
+  </div>
+  <div class="kicker">Nothing here required a different school. <span class="grad">It required starting.</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-act="Open" data-title="What you'll leave with">
+  <div class="eyebrow"><span class="dot"></span><span class="n">00</span><span>The five ideas in this talk</span></div>
+  <h1>A company is the story. <span class="grad">These five ideas are the lesson.</span></h1>
+  <div class="grid g5">
+    <div class="card lit"><span class="ctag">01</span><span class="ctitle">Problem / solution fit</span><span class="ctext">And the uncomfortable way you learn you don't have it.</span></div>
+    <div class="card ac2 lit"><span class="ctag">02</span><span class="ctitle">Customer discovery</span><span class="ctext">User ≠ buyer ≠ champion. Getting this wrong costs years.</span></div>
+    <div class="card ac3 lit"><span class="ctag">03</span><span class="ctitle">The wedge</span><span class="ctext">Narrow enough to win. Wide enough to matter later.</span></div>
+    <div class="card ac4 lit"><span class="ctag">04</span><span class="ctitle">Business model</span><span class="ctext">Nine blocks. Change six, keep three — that's a pivot.</span></div>
+    <div class="card ac5 lit"><span class="ctag">05</span><span class="ctitle">Fundraising</span><span class="ctext">It's a sales pipeline. Treat it like one or it eats you.</span></div>
+  </div>
+  <div class="kicker">Watch for these five. <span class="grad">Everything else is just my particular mess.</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-act="Education" data-title="Illinois, twice">
+  <div class="eyebrow"><span class="dot"></span><span class="n">01</span><span>Education — the foundation</span></div>
+  <h1>Both of my degrees from here <span class="grad">are load-bearing.</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Undergraduate</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.85cqi,23px)">B.S. Computer Engineering — Artificial Intelligence</span>
+      <span class="ctext">University of Illinois, Champaign. The technical floor everything else is built on — and the reason I could recognize an AI problem fourteen years later without needing anyone to explain it to me.</span>
+    </div>
+    <div class="card ac3 lit" style="justify-content:center">
+      <span class="ctag">Graduate</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.85cqi,23px)">MBA — Gies College of Business</span>
+      <span class="ctext">Data analytics specialization. Engineers can build the thing. The MBA is where I learned why a thing that works still doesn't sell — which is most of what this talk is about.</span>
+    </div>
+  </div>
+  <div class="kicker">The engineering taught me to build it. <span class="grad">The MBA taught me who it was for.</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-act="Education" data-title="The tools I went back for">
+  <div class="eyebrow"><span class="dot"></span><span class="n">02</span><span>Education — the gaps I kept finding</span></div>
+  <h1>Every venture exposed a gap. <span class="grad">I went back for the tool.</span></h1>
+  <div class="grid g4">
+    <div class="card lit"><span class="ctag">Carnegie Mellon · Heinz</span><span class="ctitle">Generative AI, data science &amp; LLMs</span><span class="ctext">Graduate coursework. When the model stack changed under the whole industry, I went and learned the new one.</span></div>
+    <div class="card ac2 lit"><span class="ctag">UT Austin · McCombs</span><span class="ctitle">Artificial intelligence &amp; machine learning</span><span class="ctext">Post-graduate program. Applied ML, end to end — the portfolio behind it is public.</span></div>
+    <div class="card ac3 lit"><span class="ctag">Wharton · UPenn</span><span class="ctitle">Innovation management &amp; entrepreneurship</span><span class="ctext">Post-graduate fellowship, CTO track. How technical founders actually run companies.</span></div>
+    <div class="card ac5 lit"><span class="ctag">Financial engineering</span><span class="ctitle">Quantitative finance, modeling &amp; algorithmic trading</span><span class="ctext">Because at some point you have to defend your own unit economics to someone who does this for a living.</span></div>
+  </div>
+  <div class="kicker">Not credential collecting. <span class="grad">Each one answers a specific thing that went wrong.</span></div>
+</section>
+
+
+<!-- ACT DIVIDER -->
+<section class="slide actdiv" data-act="The chain" data-title="Act — How I got here — one chain, no plan">
+  <img class="photo" src="assets/runway.jpg" alt="" style="object-position:28% 40%">
+  <div class="scrim"></div>
+  <div class="acontent">
+    <div class="anum">Part one</div>
+    <h1>How I got here — <span class="grad">one chain, no plan</span></h1>
+    <div class="asub">Startup Weekend, Google, Macy's, Disney, IBM. Every link was caused by the one before it.</div>
+  </div>
+  <div class="bar"></div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-act="The chain" data-title="Patient Tracker — Startup Weekend 1871">
+  <div class="eyebrow"><span class="dot"></span><span class="n">03</span><span>Where the chain begins</span></div>
+  <h1>December 2012. <span class="grad">Fifty-four hours at 1871.</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">The event</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.8cqi,22px)">Patient Tracker</span>
+      <span class="ctext">The seventh Chicago Startup Weekend, hosted at 1871 in the Merchandise Mart. Strangers on Friday night. A pitched, built, demoed healthcare product by Sunday.</span>
+      <span class="ctext">No funding. No company. No plan beyond the weekend.</span>
+    </div>
+    <div class="card ac3" style="justify-content:center">
+      <span class="ctag">What 54 hours forces</span>
+      <ul class="tick">
+        <li>You cannot build everything — so you find out what the product actually <b>is</b></li>
+        <li>You pitch to strangers who owe you nothing</li>
+        <li>You discover whether you can work with people under pressure</li>
+        <li>You ship. On a deadline that does not move.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kicker">Every skill I use now, I used badly <span class="grad">for the first time that weekend.</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-act="The chain" data-title="The twist">
+  <div class="eyebrow"><span class="dot"></span><span class="n">04</span><span>What actually happened</span></div>
+  <h1>We lost. <span class="grad">Then, twenty minutes later, we won.</span></h1>
+  <div class="chain">
+    <div class="node"><span class="nd">Sunday night</span><span class="nt">We take runner-up</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="nd">Ceremony ends</span><span class="nt">Everyone goes home</span></div>
+    <div class="arrow">→</div>
+    <div class="node ac4"><span class="nd">~15–20 min later</span><span class="nt">Judges find the winning team cheated and lied</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="nd">Immediate</span><span class="nt">Disqualified</span></div>
+    <div class="arrow">→</div>
+    <div class="node hl"><span class="nd">On the spot</span><span class="nt">Patient Tracker crowned winner</span></div>
+  </div>
+  <div class="grid g2" style="flex:0 0 auto">
+    <div class="card ac2 lit"><span class="ctag">The obvious lesson</span><span class="ctext">The panel chose to blow up their own ceremony twenty minutes after it ended rather than let a dishonest result stand. That is what a real ecosystem does.</span></div>
+    <div class="card ac4 lit"><span class="ctag">The less obvious one</span><span class="ctext">The team that cheated is gone. Nobody knows their names. In a city this small, your reputation compounds faster than your company does.</span></div>
+  </div>
+  <div class="kicker">You will be tempted to round up. <span class="grad">Don't. The room always finds out.</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-act="The chain" data-title="The prize was never the prize">
+  <div class="eyebrow"><span class="dot"></span><span class="n">05</span><span>The hinge</span></div>
+  <h1 class="big">The prize was <span class="grad">never the prize.</span></h1>
+  <div class="grid g2" style="flex:1 1 auto">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">What we thought we won</span>
+      <span class="mid-num">A trophy</span>
+      <span class="ctext">A weekend competition. A line for the résumé. A good story at parties.</span>
+    </div>
+    <div class="card ac5 lit" style="justify-content:center">
+      <span class="ctag">What we actually won</span>
+      <span class="mid-num" style="color:var(--silver-hi)">Google recruited off that team</span>
+      <span class="ctext">That weekend is how I got to Google. Not an application. Not a referral. Fifty-four hours of visible work in a room where the right people were standing.</span>
+    </div>
+  </div>
+  <div class="kicker">Do the weekend. Do the hackathon. Do the thing with no obvious payoff. <span class="grad">That's where the door is.</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-act="The chain" data-title="Google Vertex AI">
+  <div class="eyebrow"><span class="dot"></span><span class="n">06</span><span>The chain · Google</span></div>
+  <h1>Google — <span class="grad">Vertex AI</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">What I learned</span><span class="ctitle">AI at platform scale</span><span class="ctext">What it takes to ship machine learning that thousands of other engineers build on top of — reliability, versioning, and the unglamorous infrastructure nobody demos.</span></div>
+    <div class="card ac2"><span class="ctag">What transferred</span><span class="ctitle">Model systems, not model demos</span><span class="ctext">A notebook that works is not a product. The gap between those two things is where most AI startups die.</span></div>
+    <div class="card ac3"><span class="ctag">What it cost</span><span class="ctitle">Comfort</span><span class="ctext">Big-company AI is a very pleasant place to stop learning how to sell, how to price, and how to find a customer.</span></div>
+  </div>
+  <div class="kicker">Platform scale teaches you how things work. <span class="grad">It does not teach you whether anyone wants them.</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-act="The chain" data-title="Macy's, then Disney">
+  <div class="eyebrow"><span class="dot"></span><span class="n">07</span><span>The chain · the domain layer</span></div>
+  <h1>Macy's, then Disney. <span class="grad">This is where Sartori actually comes from.</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Macy's</span><span class="ctitle" style="font-size:clamp(12px,1.8cqi,22px)">Apparel</span>
+      <span class="ctext">How clothing is bought, sized, merchandised and returned at scale. Why a size 8 is not a size 8. Why a product page lies without meaning to.</span>
+    </div>
+    <div class="card ac4 lit" style="justify-content:center">
+      <span class="ctag">Disney</span><span class="ctitle" style="font-size:clamp(12px,1.8cqi,22px)">Merchandising</span>
+      <span class="ctext">How assortment, demand and the physical supply chain actually behave when the brand cannot afford to be wrong.</span>
+    </div>
+  </div>
+  <div class="kicker">AI people don't know apparel. Apparel people don't know AI. <span class="grad">The gap is the opportunity.</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-act="The chain" data-title="IBM Watson">
+  <div class="eyebrow"><span class="dot"></span><span class="n">08</span><span>The chain · IBM</span></div>
+  <h1>IBM Watson. <span class="grad">Seven years.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">Depth</span><span class="ctitle">Enterprise AI, all the way down</span><span class="ctext">Seven years of selling, scoping and delivering AI into organizations that are structurally resistant to it. Procurement. Security review. The pilot that never becomes a contract.</span></div>
+    <div class="card ac2 lit"><span class="ctag">The real education</span><span class="ctitle">Why enterprise deals die</span><span class="ctext">Almost never because the technology failed. Nearly always because nobody with a budget owned the problem.</span></div>
+    <div class="card ac4 lit"><span class="ctag">Then</span><span class="ctitle">I left — about two years ago</span><span class="ctext">To build the thing I'd been watching the market fail to solve from the inside.</span></div>
+  </div>
+  <div class="kicker">Seven years of watching enterprises say no <span class="grad">is the best sales training there is.</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-act="The chain" data-title="The IP trail">
+  <div class="eyebrow"><span class="dot"></span><span class="n">09</span><span>The chain · research &amp; IP</span></div>
+  <h1>And underneath all of it — <span class="grad">a research trail.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">Patent · 2024</span><span class="ctitle">Adaptive reinforcement learning for fashion recommendation systems</span><span class="ctext mono" style="font-size:clamp(7px,.78cqi,10px);letter-spacing:.08em">US 63/833,685</span></div>
+    <div class="card ac3 lit"><span class="ctag">Patent · 2014</span><span class="ctitle">Method and apparatus for creating an ephemeral social network</span><span class="ctext mono" style="font-size:clamp(7px,.78cqi,10px);letter-spacing:.08em">US 14/005,947</span></div>
+    <div class="card ac5 lit"><span class="ctag">Collaboration</span><span class="ctitle">Dr. Alvin Chin — Discovery Partners Institute, University of Illinois System</span><span class="ctext">Research and technical analysis supporting 20+ filings in proximity-based recommendation, mobile social-graph inference and privacy-aware AI networking.</span></div>
+  </div>
+  <div class="kicker">Illinois shows up a third time. <span class="grad">The network you build here does not expire.</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-act="The chain" data-title="The thread">
+  <div class="eyebrow"><span class="dot"></span><span class="n">10</span><span>The thread — one causal chain</span></div>
+  <h1>None of this was a plan. <span class="grad">All of it was a chain.</span></h1>
+  <div class="chain">
+    <div class="node hl"><span class="nd">Illinois</span><span class="nt">ML foundation</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">2012</span><span class="nt">Patient Tracker</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">Recruited</span><span class="nt">Google Vertex AI</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">Domain</span><span class="nt">Macy's — apparel</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">Domain</span><span class="nt">Disney — merchandising</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">7 years</span><span class="nt">IBM Watson</span></div><div class="arrow">→</div>
+    <div class="node hl"><span class="nd">Now</span><span class="nt">Sartori AI</span></div>
+  </div>
+  <div class="card lit" style="flex:0 0 auto">
+    <span class="ctext" style="font-size:clamp(10px,1.2cqi,15px)">Enterprise AI × apparel × merchandising. There are very few people holding all three at once — and that intersection is not a résumé, it's <b>the reason I can see a problem other founders look straight past.</b></span>
+  </div>
+  <div class="kicker">You don't need the plan. <span class="grad">You need to keep putting yourself where the next link can form.</span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-act="Founder reps" data-title="3D pharmaceutical printing">
+  <div class="eyebrow"><span class="dot"></span><span class="n">11</span><span>Founder reps · venture two</span></div>
+  <h1>3D pharmaceutical printing</h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">The idea</span><span class="ctitle">Printed, dose-personalized medication</span><span class="ctext">Manufacture the pill to the patient instead of the patient to the pill.</span></div>
+    <div class="card ac3"><span class="ctag">The wall</span><span class="ctitle">Regulation is a market, not a detail</span><span class="ctext">In some industries the hard part isn't whether it works — it's whether anyone is permitted to buy it.</span></div>
+    <div class="card ac2"><span class="ctag">The lesson</span><span class="ctitle">Score the path, not the vision</span><span class="ctext">A brilliant product with a seven-year approval path is a research project wearing a startup costume.</span></div>
+  </div>
+  <div class="kicker">The first question isn't "can we build it." <span class="grad">It's "who is allowed to say yes."</span></div>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-act="Founder reps" data-title="Galian">
+  <div class="eyebrow"><span class="dot"></span><span class="n">12</span><span>Founder reps · venture three</span></div>
+  <h1>Galian — <span class="grad">2D to 3D surgical theater imaging</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">The idea</span><span class="ctitle">Reconstruct the operating field in three dimensions</span><span class="ctext">Give surgeons depth from imaging that was never captured with depth.</span></div>
+    <div class="card ac5"><span class="ctag">What it proved</span><span class="ctitle">I can lead hard technical builds</span><span class="ctext">Computer vision with a real clinical bar, not a demo bar.</span></div>
+    <div class="card ac4"><span class="ctag">The lesson</span><span class="ctitle">Technical difficulty is not a moat</span><span class="ctext">Hard to build and hard to sell are different axes. Founders confuse them constantly — I did.</span></div>
+  </div>
+  <div class="kicker">Impressive and fundable <span class="grad">are not the same word.</span></div>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-act="Founder reps" data-title="MedHOK — the exit">
+  <div class="eyebrow"><span class="dot"></span><span class="n">13</span><span>Founder reps · the outcome</span></div>
+  <h1>MedHOK — <span class="grad">what an exit actually looks like from the inside.</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center;align-items:flex-start">
+      <span class="ctag">Outcome</span>
+      <span class="big-num grad">~$80–100M</span>
+      <span class="ctext">Acquired. I was part of it — not the founder, and that distinction matters when you're telling the story honestly.</span>
+    </div>
+    <div class="card ac2" style="justify-content:center">
+      <span class="ctag">What it actually teaches</span>
+      <ul class="tick">
+        <li>The exit is the <b>least</b> interesting part — the boring compounding years before it are the whole thing</li>
+        <li>Healthcare compliance software is not glamorous and it printed money</li>
+        <li>Being in the room for an acquisition teaches you what acquirers actually buy: <b>durable revenue, not vision</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kicker">Unsexy, deeply embedded, hard to rip out. <span class="grad">That's what gets bought.</span></div>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-act="Founder reps" data-title="The pattern">
+  <div class="eyebrow"><span class="dot"></span><span class="n">14</span><span>Four ventures · what repeated</span></div>
+  <h1>Four ventures in. <span class="grad">Here's what kept happening.</span></h1>
+  <div class="grid g2 rows2">
+    <div class="card ac4 lit"><span class="ctag">Mistake I kept making</span><span class="ctitle">Starting from the technology</span><span class="ctext">I'd find something I could build, then go looking for someone who needed it. That order is backwards and it costs years.</span></div>
+    <div class="card ac4 lit"><span class="ctag">Mistake I kept making</span><span class="ctitle">Confusing interest with demand</span><span class="ctext">"That's fascinating, send me more" is not a buying signal. It's politeness. I treated it as a pipeline for a decade.</span></div>
+    <div class="card ac2 lit"><span class="ctag">What I stopped doing</span><span class="ctitle">Building before scoring</span><span class="ctext">Now every direction gets scored against the same rubric before a line of code — you'll see the 13-area version later in this deck.</span></div>
+    <div class="card ac2 lit"><span class="ctag">What I started doing</span><span class="ctitle">Finding the budget holder first</span><span class="ctext">Before the product. Before the deck. Who has the money, and does this problem already hurt them enough to spend it?</span></div>
+  </div>
+  <div class="kicker">The pattern took four companies to see. <span class="grad">You get it for free in the next forty minutes.</span></div>
+</section>
+<!-- 18 -->
+<section class="slide" data-act="Ecosystems" data-title="Why accelerators matter">
+  <div class="eyebrow"><span class="dot"></span><span class="n">15</span><span>Ecosystems</span></div>
+  <h1>What an accelerator actually gives you <span class="grad">(it isn't the money).</span></h1>
+  <div class="grid g2 rows2">
+    <div class="card ac4"><span class="ctag">What people think</span><span class="ctitle">A check and a demo day</span><span class="ctext">The check is usually small and the demo day is usually the least valuable afternoon of the program.</span></div>
+    <div class="card lit"><span class="ctag">What you get</span><span class="ctitle">A forcing function</span><span class="ctext">A cohort, a calendar and people who will tell you your idea is wrong in week two instead of year two.</span></div>
+    <div class="card ac2 lit"><span class="ctag">What you get</span><span class="ctitle">Borrowed credibility</span><span class="ctext">Pre-seed, you have no revenue to point at. An institution vouching for you is collateral you cannot otherwise buy.</span></div>
+    <div class="card ac3 lit"><span class="ctag">What you get</span><span class="ctitle">Warm access</span><span class="ctext">Introductions that convert at a rate cold outreach never will. This is the actual product.</span></div>
+  </div>
+  <div class="kicker">Apply while you're a student. <span class="grad">You will never again have this much access for this little risk.</span></div>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-act="Ecosystems" data-title="University of Chicago — Polsky">
+  <div class="eyebrow"><span class="dot"></span><span class="n">16</span><span>Ecosystems · Chicago</span></div>
+  <h1>University of Chicago — <span class="grad">Polsky Center</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">2025 cohort</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.8cqi,22px)">Innovate2Market</span>
+      <span class="ctext">Sartori AI was selected into the Polsky Center's 2025 Innovate2Market cohort — the program that pushed us from a technology story to a customer story.</span>
+      <div class="btnrow" style="margin-top:6px">
+        <a class="btn" href="https://polsky.uchicago.edu/2025/10/24/the-polsky-center-welcomes-the-2025-innovate2market-cohort/" target="_blank" rel="noopener">Polsky announcement ↗</a>
+      </div>
+      <div class="lock" style="margin-top:4px"><span class="lk1">University of Chicago</span><span class="lk2">Polsky Center for Entrepreneurship and Innovation</span></div>
+    </div>
+    <div class="card ac2" style="justify-content:center">
+      <span class="ctag">What it changed</span>
+      <ul class="tick">
+        <li>Forced a <b>single</b> customer definition instead of three comfortable ones</li>
+        <li>Put structured customer discovery on a clock</li>
+        <li>Gave us a cohort to be embarrassed in front of every week</li>
+        <li>Produced the interview discipline you'll see later in this deck</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kicker">The program didn't fund us. <span class="grad">It made us answerable.</span></div>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-act="Ecosystems" data-title="Rev1 — Ohio State">
+  <div class="eyebrow"><span class="dot"></span><span class="n">17</span><span>Ecosystems · Columbus</span></div>
+  <h1>Rev1 — <span class="grad">Ohio State</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">The engagement</span><span class="ctitle">A second university ecosystem</span><span class="ctext">Different region, different investor network, different set of operators pressure-testing the same thesis.</span></div>
+    <div class="card ac3 lit"><span class="ctag">What came out of it</span><span class="ctitle">The deck you'll see pieces of today</span><span class="ctext">The returns-intelligence material in the back half of this talk was built and presented for this engagement.</span></div>
+    <div class="card ac5 lit"><span class="ctag">The lesson</span><span class="ctitle">Ecosystems compound</span><span class="ctext">One accepted application makes the next one easier. Two make the third one likely. This is the least appreciated mechanic in early fundraising.</span></div>
+  </div>
+  <div class="lockrow">
+    <div class="lock"><span class="lk1">Rev1 Ventures</span><span class="lk2">Columbus, Ohio</span></div>
+    <div class="lockdot"></div>
+    <div class="lock"><span class="lk1">The Ohio State University</span><span class="lk2">University ecosystem partner</span></div>
+  </div>
+  <div class="kicker">Your first yes is the hardest. <span class="grad">Every one after it is cheaper.</span></div>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-act="Ecosystems" data-title="Harvard — accepted">
+  <div class="eyebrow"><span class="dot"></span><span class="n">18</span><span>Ecosystems · next</span></div>
+  <h1>And one we haven't started yet: <span class="grad">Harvard.</span></h1>
+  <div class="grid g2">
+    <div class="card ac5 lit" style="justify-content:center">
+      <span class="ctag">Status</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.9cqi,24px)">Accepted — not yet begun</span>
+      <span class="ctext">I'm telling you the status precisely because the precision is the point. We were accepted. We have not done it yet. Those are different sentences and founders blur them constantly.</span>
+    </div>
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Why it belongs in this deck</span>
+      <span class="ctext">Three university ecosystems — Chicago, Ohio State, Harvard — have now evaluated this company and said yes. That's not a vanity list. For a pre-seed company with no revenue, <b>institutional validation is the only third-party signal you have.</b></span>
+    </div>
+  </div>
+  <div class="lockrow">
+    <div class="lock"><span class="lk1">Harvard University</span><span class="lk2">Accelerator — accepted, not yet begun</span></div>
+  </div>
+  <div class="kicker">Say exactly what's true. <span class="grad">"Accepted" is already a strong word — don't spend it on "partnered."</span></div>
+</section>
+
+
+<!-- ACT DIVIDER -->
+<section class="slide actdiv" data-act="Sartori · B2C" data-title="Act — Sartori AI — the consumer company">
+  <img class="photo" src="assets/runway.jpg" alt="" style="object-position:62% 45%">
+  <div class="scrim"></div>
+  <div class="acontent">
+    <div class="anum">Part two</div>
+    <h1>Sartori AI — <span class="grad">the consumer company</span></h1>
+    <div class="asub">Two years, nine surfaces, 105,000 garment embeddings — and the wrong customer.</div>
+  </div>
+  <div class="bar"></div>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-act="Sartori · B2C" data-title="The founding problem">
+  <div class="eyebrow"><span class="dot"></span><span class="n">19</span><span>Sartori · act one</span></div>
+  <h1>The problem I couldn't stop seeing: <span class="grad">nobody knows why clothes don't work.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">What I saw at Macy's</span><span class="ctitle">Fit is unknowable at purchase</span><span class="ctext">A size label is a brand-specific opinion. The shopper is guessing, and the retailer knows they're guessing.</span></div>
+    <div class="card ac3 lit"><span class="ctag">What I saw at Disney</span><span class="ctitle">Assortment is a forecast, not a fact</span><span class="ctext">You commit to inventory months before you learn whether anyone wanted it.</span></div>
+    <div class="card ac5 lit"><span class="ctag">The original thesis</span><span class="ctitle">A wardrobe graph</span><span class="ctext">If you could model garments and people in the same space, you could answer both — for the shopper and, eventually, for the brand.</span></div>
+  </div>
+  <div class="kicker">The thesis was right. <span class="grad">Who I sold it to was wrong for two years.</span></div>
+</section>
+
+<!-- 23 -->
+<section class="slide" data-act="Sartori · B2C" data-title="What we built">
+  <div class="eyebrow"><span class="dot"></span><span class="n">20</span><span>Sartori · the platform</span></div>
+  <h1>We built it. <span class="grad">All of it.</span></h1>
+  <div class="grid g4">
+    <div class="card lit"><span class="ctag">Scale</span><span class="big-num">105K</span><span class="ctext">garment embeddings in the recommendation index</span></div>
+    <div class="card ac2 lit"><span class="ctag">Surface area</span><span class="big-num">~87</span><span class="ctext">production API endpoints</span></div>
+    <div class="card ac3 lit"><span class="ctag">Architecture</span><span class="big-num">9</span><span class="ctext">portal surfaces — CX, BX, DX, RX, WX, SX, PX, MX, IX</span></div>
+    <div class="card ac5 lit"><span class="ctag">Pipeline</span><span class="mid-num">CLIP + FAISS</span><span class="ctext">vector recommendation over the garment index, on GCP with row-level security</span></div>
+  </div>
+  <div class="card ac4 lit" style="flex:0 0 auto">
+    <span class="ctag">The honest part</span>
+    <span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">This slide is a trap, and I'm walking you into it on purpose. Nine surfaces and eighty-seven endpoints is not evidence of traction. <b>It's evidence that we built for two years before we knew who was paying.</b></span>
+  </div>
+  <div class="kicker">Impressive architecture <span class="grad">is the most expensive way to avoid talking to customers.</span></div>
+</section>
+
+<!-- 24 DEMO -->
+<section class="slide" data-act="Sartori · B2C" data-title="Live demo — the consumer engine" data-embed="https://fast.wistia.net/embed/iframe/gsr8z6rrrn?seo=true&videoFoam=false">
+  <div class="eyebrow"><span class="dot"></span><span class="n">21</span><span>Live · the consumer recommendation engine</span></div>
+  <h1>This is what we spent two years building. <span class="grad">Watch what it does well.</span></h1>
+  <div class="livegrid">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Live demo</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.7cqi,21px)">The consumer recommendation engine</span>
+      <span class="ctext">CLIP + FAISS over 105K garment embeddings. Give it what you own and it reasons about what actually goes with it.</span>
+      <div class="btnrow" style="margin-top:4px">
+        <a class="btn pri" href="https://sartori-ai.wistia.com/medias/gsr8z6rrrn" target="_blank" rel="noopener">▶ Play the demo ↗</a>
+      </div>
+      <span class="ctext" style="font-size:clamp(8.5px,.95cqi,12px);color:var(--silver-lo)">Plays inline at right — the button opens it full-screen in a new tab.</span>
+    </div>
+    <div class="framecol">
+      <div class="frame">
+        <a class="btn popout" href="https://sartori-ai.wistia.com/medias/gsr8z6rrrn" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="framecap"><b>sartori-ai.wistia.com</b> — plays inline when the network allows it. If the panel is blank, hit <b>Play the demo ↗</b>.</div>
+    </div>
+  </div>
+  <div class="kicker">It works. <span class="grad">Working was never the problem.</span></div>
+</section>
+
+<!-- 25 -->
+<section class="slide" data-act="Sartori · B2C" data-title="What customers actually told us">
+  <div class="eyebrow"><span class="dot"></span><span class="n">22</span><span>Sartori · discovery, unedited</span></div>
+  <h1>Then we talked to people. <span class="grad">Here's what came back.</span></h1>
+  <div class="grid g2 rows2">
+    <div class="card ac2 lit"><span class="ctag">Consumers said</span><span class="ctitle">"This is cool."</span><span class="ctext">Genuine enthusiasm. Waitlist signups. Founding members. Everything that feels like validation.</span></div>
+    <div class="card ac4 lit"><span class="ctag">Consumers also said</span><span class="ctitle">"...I wouldn't pay monthly for it."</span><span class="ctext">The feature was a delight, not a bill. Delight does not survive a subscription renewal screen.</span></div>
+    <div class="card ac4 lit"><span class="ctag">The structural problem</span><span class="ctitle">Consumer CAC vs. a $10 ARPU</span><span class="ctext">To reach the shopper we'd have to buy them, repeatedly, from the same ad platforms as everyone else. The math never closed.</span></div>
+    <div class="card lit"><span class="ctag">The signal we almost missed</span><span class="ctitle">Retailers kept asking about the data</span><span class="ctext">Every brand conversation drifted to the same question: <b>what are you learning about why people return things?</b></span></div>
+  </div>
+  <div class="kicker">The customer told us who the customer was. <span class="grad">It took us a while to hear it.</span></div>
+</section>
+
+<!-- 26 CONCEPT -->
+<section class="slide concept" data-act="Concept" data-title="Concept — problem / solution fit">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 01</span><span>Problem / solution fit</span></div>
+  <h1 class="big">You don't have fit <span class="grad">because people like it.</span></h1>
+  <div class="grid g2">
+    <div class="card ac4 lit"><span class="ctag">Signals that feel like fit</span>
+      <ul class="tick">
+        <li>"This is so cool"</li><li>Waitlist signups</li><li>Press and social engagement</li>
+        <li>Investors asking follow-up questions</li><li>Friends using it for free</li>
+      </ul>
+    </div>
+    <div class="card ac2 lit"><span class="ctag">Signals that are fit</span>
+      <ul class="tick">
+        <li>They describe the problem to you <b>before</b> you describe it to them</li>
+        <li>They are already paying for a bad solution</li>
+        <li>They have a budget line for it this fiscal year</li>
+        <li>They ask about implementation, not features</li>
+        <li>They get annoyed when the conversation ends without a next step</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kicker">If you have to explain why it hurts, <span class="grad">it doesn't hurt enough yet.</span></div>
+</section>
+
+<!-- 27 -->
+<section class="slide" data-act="Sartori · the turn" data-title="The realization">
+  <div class="eyebrow"><span class="dot"></span><span class="n">23</span><span>Sartori · the turn</span></div>
+  <h1>The exhaust <span class="grad">was worth more than the engine.</span></h1>
+  <div class="chain" style="flex:0 0 auto">
+    <div class="node"><span class="nd">We thought</span><span class="nt">The recommendation is the product</span></div>
+    <div class="arrow">→</div>
+    <div class="node"><span class="nd">Reality</span><span class="nt">The recommendation is a feature anyone can copy</span></div>
+    <div class="arrow">→</div>
+    <div class="node hl"><span class="nd">The asset</span><span class="nt">The behavioral and outcome data underneath it</span></div>
+  </div>
+  <div class="grid g2">
+    <div class="card lit"><span class="ctag">What we had</span><span class="ctext">A garment graph, embeddings, and — critically — <b>outcome data</b>: what people kept, what came back, and the stated reason why. Nobody in apparel systematically connects those three.</span></div>
+    <div class="card ac2 lit"><span class="ctag">What that implied</span><span class="ctext">The entity with the pain, the budget and the data obligation isn't the shopper. <b>It's the retailer.</b> Same technology. Entirely different company.</span></div>
+  </div>
+  <div class="kicker">A pivot isn't abandoning what you built. <span class="grad">It's realizing you pointed it at the wrong buyer.</span></div>
+</section>
+
+<!-- 28 CONCEPT -->
+<section class="slide concept" data-act="Concept" data-title="Concept — B2B2C">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 02</span><span>B2B2C — the seductive middle</span></div>
+  <h1>Our first move was B2B2C. <span class="grad">Here's why that's the hardest model there is.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">The pitch to yourself</span><span class="ctitle">"We keep the consumer magic and let retailers pay for it."</span><span class="ctext">You get the brand you love and the revenue you need. It sounds like a solution to everything.</span></div>
+    <div class="card ac4 lit"><span class="ctag">The reality</span><span class="ctitle">You now have two customers and two products</span><span class="ctext">A consumer experience that must delight, and an enterprise product that must survive procurement. Pre-seed, you cannot staff both.</span></div>
+    <div class="card ac2 lit"><span class="ctag">When it does work</span><span class="ctitle">When one side is nearly free</span><span class="ctext">B2B2C works when the consumer side needs no acquisition spend — distribution comes from the business. If you're buying both audiences, it's two companies.</span></div>
+  </div>
+  <div class="kicker">B2B2C is where founders go <span class="grad">when they aren't ready to give up the consumer dream. I was there for a year.</span></div>
+</section>
+
+<!-- 29 CONCEPT - buyers first (rev1 visual) -->
+<section class="slide concept" data-act="Concept" data-title="Concept — user ≠ buyer ≠ champion">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 03</span><span>Customer discovery, done properly</span></div>
+  <h1>Three different people. <span class="grad">Only one of them has money.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">The user</span><span class="ctitle">Lives in the workflow</span><span class="ctext">Returns managers, merchandising and fit teams, ops analysts. They'll tell you whether it's usable. They cannot buy it.</span></div>
+    <div class="card ac3 lit"><span class="ctag">The champion</span><span class="ctitle">Carries it internally</span><span class="ctext">The person who spends their own political capital to push it through. You need one. They still can't sign.</span></div>
+    <div class="card ac2 lit"><span class="ctag">The buyer</span><span class="ctitle">Owns the budget</span><span class="ctext">VP/Director of e-commerce, retail ops, CX or reverse logistics. One question decides everything: <b>will you pay to fix this?</b></span></div>
+  </div>
+  <div class="card ac4 lit" style="flex:0 0 auto"><span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">I spent the better part of a year doing excellent discovery with users and calling it validation. <b>Users will enthusiastically validate a product nobody will ever purchase.</b></span></div>
+  <div class="kicker">Validate the buyer and the budget first. <span class="grad">The workflow, the channel and the stack follow.</span></div>
+</section>
+
+<!-- 30 -->
+<section class="slide" data-act="Sartori · the turn" data-title="The 13-area drill-down">
+  <div class="eyebrow"><span class="dot"></span><span class="n">24</span><span>Sartori · scoring every direction</span></div>
+  <h1>So we scored every direction. <span class="grad">Including the ones we wanted to be true.</span></h1>
+  <div class="grid g4 rows2" style="gap:clamp(5px,.8cqi,10px)">
+    <div class="card ac2 lit"><span class="ctag">VX · Returns</span><span class="mid-num">Lead wedge</span><span class="ctext">The verdict — attack first</span></div>
+    <div class="card ac2 lit"><span class="ctag">TX · Trend</span><span class="mid-num">28/35</span><span class="ctext">Attack</span></div>
+    <div class="card ac3"><span class="ctag">SX · Repair</span><span class="mid-num">25/35</span><span class="ctext">Sequence after VX, as a module</span></div>
+    <div class="card ac3"><span class="ctag">LX · Logistics</span><span class="mid-num">23/35</span><span class="ctext">Sequence + partner</span></div>
+    <div class="card ac3"><span class="ctag">PX · Production</span><span class="mid-num">23/35</span><span class="ctext">Sequence as provenance module</span></div>
+    <div class="card ac3"><span class="ctag">MX · Resale</span><span class="mid-num">22/35</span><span class="ctext">Reclassify to module</span></div>
+    <div class="card ac4 lit"><span class="ctag">EX · End-of-life</span><span class="mid-num">21/35</span><span class="ctext">Pass on recycling business</span></div>
+    <div class="card ac4 lit"><span class="ctag">GX · Sourcing</span><span class="mid-num">20/35</span><span class="ctext">Don't build</span></div>
+  </div>
+  <div class="kicker">The two red cards are the valuable ones. <span class="grad">A strategy with no "no" in it isn't a strategy.</span></div>
+</section>
+
+<!-- 31 CONCEPT -->
+<section class="slide concept" data-act="Concept" data-title="Concept — the wedge">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 04</span><span>The wedge</span></div>
+  <h1 class="big">A wedge is <span class="grad">the smallest thing you can be undeniably best at.</span></h1>
+  <div class="grid g2">
+    <div class="card lit"><span class="ctag">A wedge must be</span>
+      <ul class="tick">
+        <li><b>Narrow</b> — one painful, specific, budgeted problem</li>
+        <li><b>Winnable</b> — you can be clearly best, not marginally better</li>
+        <li><b>Urgent</b> — it hurts this quarter, not someday</li>
+        <li><b>Expandable</b> — it opens an adjacent door once you're inside</li>
+        <li><b>Defensible</b> — doing it gives you an asset competitors can't copy</li>
+      </ul>
+    </div>
+    <div class="card ac4 lit"><span class="ctag">A wedge is not</span>
+      <ul class="tick">
+        <li>Your favorite feature</li>
+        <li>The biggest market you can name</li>
+        <li>The hardest thing you can build</li>
+        <li>A smaller version of the whole vision</li>
+        <li>Anything you chose without scoring the alternatives</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kicker">Narrow entry. Wide expansion. <span class="grad">Founders fall in love with the expansion and skip the entry.</span></div>
+</section>
+
+
+<!-- ACT DIVIDER -->
+<section class="slide actdiv" data-act="Sartori · B2B" data-title="Act — Finding the wedge — returns">
+  <img class="photo" src="assets/runway.jpg" alt="" style="object-position:80% 55%">
+  <div class="scrim"></div>
+  <div class="acontent">
+    <div class="anum">Part three</div>
+    <h1>Finding the wedge — <span class="grad">returns</span></h1>
+    <div class="asub">Score every direction. Pick the narrowest one you can win. Say no out loud.</div>
+  </div>
+  <div class="bar"></div>
+</section>
+
+<!-- 32 -->
+<section class="slide" data-act="Sartori · B2B" data-title="The verdict — returns">
+  <div class="eyebrow"><span class="dot"></span><span class="n">25</span><span>Sartori · the wedge</span></div>
+  <h1>Returns won. <span class="grad">Here's the scorecard it won on.</span></h1>
+  <div class="grid g5">
+    <div class="card ac2 lit"><span class="ctag">Narrow</span><span class="ctext">One workflow, one owner, one number on a P&amp;L.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Winnable</span><span class="ctext">Incumbents report <b>that</b> a return happened. Nobody diagnoses <b>why</b>.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Urgent</span><span class="ctext">It's margin, it's measured monthly, and it's getting worse.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Expandable</span><span class="ctext">Root cause reaches back into fit, sizing, PDP, buying and design.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Defensible</span><span class="ctext">Every return we diagnose makes the outcome graph better. Data compounds.</span></div>
+  </div>
+  <div class="card lit" style="flex:0 0 auto"><span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">And the quiet one: <b>it's the only direction where the thing we already built — the garment graph and the outcome data — is the actual moat</b> rather than a nice-to-have.</span></div>
+  <div class="kicker">We didn't pick returns because we loved it. <span class="grad">We picked it because it scored.</span></div>
+</section>
+
+<!-- 33 rev1 visual: the information problem -->
+<section class="slide bleed" data-act="Sartori · B2B" data-title="Returns are an information problem">
+  <img src="assets/rev1-problem.jpg" alt="Returns are a $849.9B information problem — Sartori reads the chain backwards to solve it">
+</section>
+
+<!-- 34 -->
+<section class="slide" data-act="Sartori · B2B" data-title="The Reverse Intelligence Snapshot">
+  <div class="eyebrow"><span class="dot"></span><span class="n">26</span><span>Sartori · the product the wedge produced</span></div>
+  <h1>The Reverse Intelligence Snapshot <span class="grad">— read the chain backwards.</span></h1>
+  <div class="chain" style="flex:0 0 auto">
+    <div class="node ac5"><span class="nd">Input</span><span class="nt">Return event + stated reason</span></div><div class="arrow">→</div>
+    <div class="node hl"><span class="nd">Diagnose</span><span class="nt">Root cause — fit, expectation, QA</span></div><div class="arrow">→</div>
+    <div class="node ac2"><span class="nd">Prescribe</span><span class="nt">Specific fix — size curve, PDP</span></div><div class="arrow">→</div>
+    <div class="node ac3"><span class="nd">Measure</span><span class="nt">Return rate ↓ · margin recovered</span></div>
+  </div>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">Why it sells</span><span class="ctitle">It learns from outcome data</span><span class="ctext">What came back and why — not pre-purchase clicks, which is what everyone else models.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Why it sticks</span><span class="ctitle">It feeds next season</span><span class="ctext">Every return becomes an input to design, buying and PDP decisions.</span></div>
+    <div class="card ac3 lit"><span class="ctag">Why it closes</span><span class="ctitle">Three board-ready artifacts</span><span class="ctext">Not another dashboard somebody has to learn. Deliverables an executive can act on.</span></div>
+  </div>
+  <div class="kicker">Returns aren't a logistics problem. <span class="grad">They're an information problem.</span></div>
+</section>
+<!-- 35 rev1 visual: five layers -->
+<section class="slide bleed" data-act="Sartori · B2B" data-title="Five layers of returns tech">
+  <img src="assets/rev1-layers.jpg" alt="Five layers of returns tech — one layer is the real battlefield">
+</section>
+
+<!-- 36 rev1 visual: capability spread -->
+<section class="slide bleed" data-act="Sartori · B2B" data-title="15 features, scored">
+  <img src="assets/rev1-capability.jpg" alt="15 features scored — core where it counts, partnered where it doesn't">
+</section>
+
+<!-- 37 rev1 visual: 20 interviews -->
+<section class="slide bleed" data-act="Sartori · B2B" data-title="20 interviews, 10 coded dimensions">
+  <img src="assets/rev1-signal.jpg" alt="20 interviews, 10 coded dimensions — a strongly validated signal">
+</section>
+
+<!-- 38 CONCEPT -->
+<section class="slide concept" data-act="Concept" data-title="Concept — validation vs. vanity">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 05</span><span>Validation vs. vanity</span></div>
+  <h1>Set the threshold <span class="grad">before you run the interviews.</span></h1>
+  <div class="grid g4">
+    <div class="card ac2 lit"><span class="ctag">Problem difficulty</span><span class="mid-num">18/20</span><span class="ctext">target ≥67% — cleared</span></div>
+    <div class="card ac2 lit"><span class="ctag">Unprompted ID</span><span class="mid-num">9/20</span><span class="ctext">target ≥42% — cleared</span></div>
+    <div class="card ac2 lit"><span class="ctag">Credible pilot interest</span><span class="mid-num">14/20</span><span class="ctext">target ≥33% — cleared</span></div>
+    <div class="card ac2 lit"><span class="ctag">Concrete next step</span><span class="mid-num">4/20</span><span class="ctext">target ≥17% — cleared</span></div>
+  </div>
+  <div class="grid g2" style="flex:0 0 auto">
+    <div class="card lit"><span class="ctag">Why thresholds first</span><span class="ctext">If you decide what "good" means <b>after</b> you see the data, you will always find a way to call it good. Writing the bar down in advance is the only defense against your own optimism.</span></div>
+    <div class="card ac3 lit"><span class="ctag">The strongest number here</span><span class="ctext"><b>Unprompted identification</b> — 9 of 20 described the problem before we did. That one can't be led, coached or wished into existence. It's the hardest signal to fake and the one investors ask about.</span></div>
+  </div>
+  <div class="kicker">Twenty honest interviews <span class="grad">beat two hundred flattering ones.</span></div>
+</section>
+
+<!-- 39 rev1 visual: market -->
+<section class="slide bleed" data-act="Sartori · B2B" data-title="TAM, SAM, SOM">
+  <img src="assets/rev1-market.jpg" alt="Millions of returned garments — one focused revenue opportunity">
+</section>
+
+<!-- 40 CONCEPT BMC -->
+<section class="slide concept" data-act="Concept" data-title="Concept — the Business Model Canvas">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 06</span><span>Business Model Canvas</span></div>
+  <h1>Nine blocks. <span class="grad">One page. No hiding.</span></h1>
+  <div class="bmc">
+    <div class="b kp"><h4>Key partners</h4><p>Who you depend on to deliver</p></div>
+    <div class="b ka"><h4>Key activities</h4><p>What you must do well, every day</p></div>
+    <div class="b vp"><h4>Value proposition</h4><p>The job you do for the customer — in their words, not yours. If you can't write this block, nothing else on the page is real.</p></div>
+    <div class="b cr"><h4>Customer relationships</h4><p>How you win, keep and grow them</p></div>
+    <div class="b cs"><h4>Customer segments</h4><p>Who, precisely. "Retailers" is not a segment. "VP of e-commerce at a $50M–$500M apparel brand" is.</p></div>
+    <div class="b kr"><h4>Key resources</h4><p>The assets you own that others don't</p></div>
+    <div class="b ch"><h4>Channels</h4><p>How you reach and deliver</p></div>
+    <div class="b cost"><h4>Cost structure</h4><p>What it costs to keep the promise</p></div>
+    <div class="b rev"><h4>Revenue streams</h4><p>Who pays, how much, how often — and what makes them renew</p></div>
+  </div>
+  <div class="kicker">The canvas doesn't make you right. <span class="grad">It makes it obvious where you're guessing.</span></div>
+</section>
+
+<!-- 41 BMC B2C -->
+<section class="slide" data-act="Business model" data-title="Sartori's canvas — B2C">
+  <div class="eyebrow"><span class="dot"></span><span class="n">27</span><span>Sartori's canvas · version one</span></div>
+  <h1>Version one — <span class="grad">the consumer company.</span></h1>
+  <div class="bmc">
+    <div class="b kp"><h4>Key partners</h4><p>Retail data sources · cloud infra</p></div>
+    <div class="b ka"><h4>Key activities</h4><p>Build the graph · tune recommendations · grow the waitlist</p></div>
+    <div class="b vp"><h4>Value proposition</h4><p>Know what actually suits you — personalized wardrobe intelligence across everything you own and everything you might buy.</p></div>
+    <div class="b cr"><h4>Customer relationships</h4><p>Self-serve app · founding-member community</p></div>
+    <div class="b cs"><h4>Customer segments</h4><p>Style-conscious individual shoppers</p></div>
+    <div class="b kr"><h4>Key resources</h4><p>105K garment embeddings · CLIP + FAISS · the wardrobe graph</p></div>
+    <div class="b ch"><h4>Channels</h4><p>D2C web &amp; app · social · waitlist</p></div>
+    <div class="b cost"><h4>Cost structure</h4><p>Inference · nine product surfaces · <b>consumer acquisition</b></p></div>
+    <div class="b rev"><h4>Revenue streams</h4><p>Consumer subscription — single-digit monthly ARPU, against paid acquisition</p></div>
+  </div>
+  <div class="kicker">Every block was fillable. <span class="grad">Two of them — channels and revenue — never survived contact with arithmetic.</span></div>
+</section>
+
+<!-- 42 BMC B2B -->
+<section class="slide" data-act="Business model" data-title="Sartori's canvas — B2B">
+  <div class="eyebrow"><span class="dot"></span><span class="n">28</span><span>Sartori's canvas · version two · <span style="color:var(--mg)">pink = changed</span> · <span style="color:var(--gn)">green = kept</span></span></div>
+  <h1>Version two — <span class="grad">same engine, different company.</span></h1>
+  <div class="bmc">
+    <div class="b chg kp"><h4>Key partners</h4><p>Returns platforms · 3PL / reverse logistics · SIs</p></div>
+    <div class="b chg ka"><h4>Key activities</h4><p>Root-cause diagnosis · SRII assessment · pilot delivery</p></div>
+    <div class="b chg vp"><h4>Value proposition</h4><p>Know <b>why</b> product comes back — and what specifically to change in sizing, PDP and buying to stop it. Measured in recovered margin.</p></div>
+    <div class="b chg cr"><h4>Customer relationships</h4><p>Enterprise pilot → annual contract · exec reporting</p></div>
+    <div class="b chg cs"><h4>Customer segments</h4><p>VP / Director of e-commerce, retail ops or reverse logistics at mid-market apparel retailers</p></div>
+    <div class="b keep kr"><h4>Key resources</h4><p>The same graph, embeddings and outcome data — <b>unchanged</b></p></div>
+    <div class="b chg ch"><h4>Channels</h4><p>Direct enterprise sales · assessment funnel · channel partners</p></div>
+    <div class="b keep cost"><h4>Cost structure</h4><p>Inference and data integration — <b>minus consumer acquisition</b></p></div>
+    <div class="b chg rev"><h4>Revenue streams</h4><p>Annual enterprise contracts, entered through a paid diagnostic engagement</p></div>
+  </div>
+  <div class="kicker">Six blocks changed. Three didn't. <span class="grad">The three that didn't are the company.</span></div>
+</section>
+
+<!-- 43 CONCEPT funnel -->
+<section class="slide concept" data-act="Concept" data-title="Concept — the sales funnel">
+  <div class="eyebrow"><span class="dot"></span><span class="n">Concept 07</span><span>The funnel</span></div>
+  <h1>A funnel is a set of <span class="grad">falsifiable stages</span> — not a feeling.</h1>
+  <div class="chain" style="flex:0 0 auto">
+    <div class="node"><span class="nd">Stage 1</span><span class="nt">Target list</span></div><div class="arrow">→</div>
+    <div class="node"><span class="nd">Stage 2</span><span class="nt">Qualified conversation</span></div><div class="arrow">→</div>
+    <div class="node ac3"><span class="nd">Stage 3</span><span class="nt">Assessment taken</span></div><div class="arrow">→</div>
+    <div class="node ac5"><span class="nd">Stage 4</span><span class="nt">Diagnostic engagement</span></div><div class="arrow">→</div>
+    <div class="node hl"><span class="nd">Stage 5</span><span class="nt">Signed pilot</span></div><div class="arrow">→</div>
+    <div class="node ac2"><span class="nd">Stage 6</span><span class="nt">Annual contract</span></div>
+  </div>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">Rule one</span><span class="ctitle">Every stage has an exit test</span><span class="ctext">A specific thing that must be true to advance. Not "they seemed excited."</span></div>
+    <div class="card ac3 lit"><span class="ctag">Rule two</span><span class="ctitle">Stages only move forward on their action</span><span class="ctext">Something <b>they</b> did — booked, submitted, signed. Not something you sent.</span></div>
+    <div class="card ac4 lit"><span class="ctag">Rule three</span><span class="ctitle">Measure conversion, not activity</span><span class="ctext">A hundred conversations with zero stage-three conversions is not a busy quarter. It's a broken stage two.</span></div>
+  </div>
+  <div class="kicker">The top of my funnel is a free assessment. <span class="grad">Let me show you it running.</span></div>
+</section>
+
+<!-- 44 LIVE assessment -->
+<section class="slide" data-act="Live" data-title="Live — the SRII assessment" data-embed="https://srii-assessment.netlify.app/">
+  <div class="eyebrow"><span class="dot"></span><span class="n">29</span><span>Live · where my funnel starts</span></div>
+  <h1>The Sartori Returns Intelligence Index — <span class="grad">stage three, running live.</span></h1>
+  <div class="livegrid">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Try it from your seat</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.7cqi,21px)">The SRII assessment</span>
+      <span class="ctext">A scored self-assessment. The retailer gets something useful in four minutes — I get a qualified lead who has <b>already diagnosed themselves.</b></span>
+      <div class="btnrow" style="margin-top:4px">
+        <a class="btn pri" href="https://srii-assessment.netlify.app/" target="_blank" rel="noopener">Open the assessment ↗</a>
+      </div>
+    </div>
+    <div class="framecol">
+      <div class="frame">
+        <a class="btn popout" href="https://srii-assessment.netlify.app/" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="framecap"><b>srii-assessment.netlify.app</b> — some sites refuse to render inside another page. If the panel is blank, that is why: click <b>Open ↗</b> and walk it live.</div>
+    </div>
+  </div>
+  <div class="kicker">Give value to get information. <span class="grad">That's the whole trick at the top of a funnel.</span></div>
+</section>
+
+<!-- 45 LIVE field qualifier -->
+<section class="slide" data-act="Live" data-title="Live — the Field Qualifier" data-embed="https://outreach.sartori.ai/field-qualifier/">
+  <div class="eyebrow"><span class="dot"></span><span class="n">30</span><span>Live · qualifying in the room</span></div>
+  <h1>And this is what I carry <span class="grad">into the conversation itself.</span></h1>
+  <div class="livegrid">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">Discovery, instrumented</span>
+      <span class="ctitle" style="font-size:clamp(12px,1.7cqi,21px)">The Field Qualifier</span>
+      <span class="ctext">I run this on an iPad during live discovery, so an interview produces <b>coded, comparable data</b> — not a page of notes I'll reread optimistically a week later.</span>
+      <span class="ctext">This is how twenty conversations became the scored chart you saw earlier.</span>
+      <div class="btnrow" style="margin-top:4px">
+        <a class="btn pri" href="https://outreach.sartori.ai/field-qualifier/" target="_blank" rel="noopener">Open the Field Qualifier ↗</a>
+      </div>
+    </div>
+    <div class="framecol">
+      <div class="frame">
+        <a class="btn popout" href="https://outreach.sartori.ai/field-qualifier/" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+      <div class="framecap"><b>outreach.sartori.ai/field-qualifier</b> — if the panel is blank the site is refusing to embed. Click <b>Open ↗</b> and demo it in the browser.</div>
+    </div>
+  </div>
+  <div class="kicker">Structure your discovery <span class="grad">or your memory will edit it in your favor.</span></div>
+</section>
+
+<!-- 46 -->
+<section class="slide" data-act="Fundraising" data-title="Pre-seed reality">
+  <div class="eyebrow"><span class="dot"></span><span class="n">31</span><span>Fundraising · the math nobody tells you</span></div>
+  <h1>Let me be honest about <span class="grad">what raising actually looks like.</span></h1>
+  <div class="grid g3">
+    <div class="card ac4 lit"><span class="ctag">The conversion reality</span><span class="ctitle">It is a low-single-digit yes rate</span><span class="ctext">Across a serious target list. Not because the company is bad — because almost every fund has a thesis you don't fit, and you can't know which from the outside.</span></div>
+    <div class="card ac3 lit"><span class="ctag">The time reality</span><span class="ctitle">Raising is a full-time job</span><span class="ctext">While the other full-time job — building and selling — does not pause. This is the actual difficulty, and nobody warns you.</span></div>
+    <div class="card lit"><span class="ctag">The emotional reality</span><span class="ctitle">You will hear no, constantly</span><span class="ctext">The founders who make it aren't the ones who hear less no. They're the ones who built a system that makes no survivable.</span></div>
+  </div>
+  <div class="kicker">The only antidote to rejection at volume <span class="grad">is process.</span></div>
+</section>
+
+<!-- 47 -->
+<section class="slide" data-act="Fundraising" data-title="A system, not a hustle">
+  <div class="eyebrow"><span class="dot"></span><span class="n">32</span><span>Fundraising · the system</span></div>
+  <h1>So I built a system. <span class="grad">Same discipline as the sales funnel.</span></h1>
+  <div class="grid g3">
+    <div class="card lit"><span class="ctag">Coverage</span><span class="big-num">127</span><span class="ctext">accelerator and program tracker — scored, deadlined, status-tracked</span></div>
+    <div class="card ac3 lit"><span class="ctag">Coverage</span><span class="big-num">50</span><span class="ctext">target investor firms, researched against thesis fit before a single email</span></div>
+    <div class="card ac2 lit"><span class="ctag">Discipline</span><span class="mid-num">Stage + exit test</span><span class="ctext">Every conversation sits in a stage with a defined next action and an owner. Nothing lives in my head.</span></div>
+  </div>
+  <div class="card ac5 lit" style="flex:0 0 auto"><span class="ctag">What this buys you</span><span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">When a no arrives, it's a <b>stage transition</b>, not a verdict on your life's work. That reframe is worth more than any pitch coaching you'll ever get.</span></div>
+  <div class="kicker">Treat fundraising like a pipeline <span class="grad">and it stops being personal.</span></div>
+</section>
+
+<!-- 48 -->
+<section class="slide" data-act="Where we are" data-title="Where Sartori is today">
+  <div class="eyebrow"><span class="dot"></span><span class="n">33</span><span>Where we are, precisely</span></div>
+  <h1>Where this actually stands <span class="grad">— stated plainly.</span></h1>
+  <div class="grid g3">
+    <div class="card ac2 lit"><span class="ctag">Validated</span><span class="ctitle">Problem &amp; economic buyer</span><span class="ctext">20 coded interviews. Every pre-set threshold cleared. The pain, the buyer and the budget are real.</span></div>
+    <div class="card ac3 lit"><span class="ctag">Activated</span><span class="ctitle">Commercial pipeline</span><span class="ctext">Four retailers have expressed pilot interest. The next objective is the first <b>signed</b> agreement — that word is doing deliberate work.</span></div>
+    <div class="card ac4 lit"><span class="ctag">Next milestone</span><span class="ctitle">Revenue &amp; repeatability</span><span class="ctext">Measurable financial outcomes, validated pricing, a repeatable enterprise offering.</span></div>
+  </div>
+  <div class="card lit" style="flex:0 0 auto"><span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">I'm showing you a company <b>mid-sentence</b>, not a finished one. Most talks you'll hear are told backwards from a successful ending. This one doesn't have an ending yet — which is the only reason it's useful to you.</span></div>
+  <div class="kicker">From concept to customer → <span class="grad">from customer to commercialization.</span></div>
+</section>
+
+<!-- 49 -->
+<section class="slide" data-act="Where we are" data-title="What's ahead">
+  <div class="eyebrow"><span class="dot"></span><span class="n">34</span><span>What's next</span></div>
+  <h1>What's ahead</h1>
+  <div class="grid g4">
+    <div class="card ac5 lit"><span class="ctag">Ecosystem</span><span class="ctitle">Harvard accelerator</span><span class="ctext">Accepted. Not yet started. The third institution to back this thesis.</span></div>
+    <div class="card lit"><span class="ctag">Commercial</span><span class="ctitle">First signed pilot</span><span class="ctext">Converting stated interest into a contract — the only milestone that counts right now.</span></div>
+    <div class="card ac2 lit"><span class="ctag">Product</span><span class="ctitle">Prove recovered margin</span><span class="ctext">Measured outcomes a CFO will accept, not modeled ones.</span></div>
+    <div class="card ac3 lit"><span class="ctag">Team</span><span class="ctitle">The next intern cohort</span><span class="ctext">Which is partly why I'm standing here.</span></div>
+  </div>
+  <div class="kicker">Every one of these is a stage with an exit test. <span class="grad">Including the last one.</span></div>
+</section>
+
+
+<!-- ACT DIVIDER -->
+<section class="slide actdiv" data-act="Work with us" data-title="Act — Work with us — and with each other">
+  <img class="photo" src="assets/runway.jpg" alt="" style="object-position:12% 52%">
+  <div class="scrim"></div>
+  <div class="acontent">
+    <div class="anum">Part four</div>
+    <h1>Work with us — <span class="grad">and with each other</span></h1>
+    <div class="asub">Internships, the cohort you'd join, and the one thing worth doing before you leave this room.</div>
+  </div>
+  <div class="bar"></div>
+</section>
+
+<!-- 50 INTERNSHIPS -->
+<section class="slide" data-act="Work with us" data-title="Internships at Sartori AI">
+  <div class="eyebrow"><span class="dot"></span><span class="n">35</span><span>Work with us</span></div>
+  <h1>We're taking interns. <span class="grad">Last year's cohort came from this room.</span></h1>
+  <div class="grid g2">
+    <div class="card lit" style="justify-content:center">
+      <span class="ctag">This is not hypothetical</span>
+      <span class="ctitle" style="font-size:clamp(11px,1.6cqi,20px)">Students from last year's engagement joined us as interns</span>
+      <span class="ctext">From this exact talk, from these exact classes. It worked — for them and for us. That's why I'm back.</span>
+    </div>
+    <div class="card ac2" style="justify-content:center">
+      <span class="ctag">What you'd actually do</span>
+      <ul class="tick">
+        <li>Competitive analysis — the kind you saw scored earlier in this deck</li>
+        <li>Adjacency mapping and market sizing</li>
+        <li>Business model canvas work on live strategic questions</li>
+        <li>Customer discovery — real interviews with real buyers</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card ac3 lit" style="flex:0 0 auto"><span class="ctag">Not coffee</span><span class="ctext" style="font-size:clamp(10px,1.15cqi,15px)">Every artifact in the back half of this deck is the kind of work an intern here actually produces. <b>You'd be doing the analysis that decides what the company does next.</b></span></div>
+  <div class="kicker">Pre-seed has no bench. <span class="grad">If you're here, you're in the work.</span></div>
+</section>
+
+<!-- 51 INTERNSHIPS - the network -->
+<section class="slide" data-act="Work with us" data-title="Who you'd be working alongside">
+  <div class="eyebrow"><span class="dot"></span><span class="n">36</span><span>Work with us · the room you'd be in</span></div>
+  <h1>You'd be working <span class="grad">alongside University of Chicago students.</span></h1>
+  <div class="grid g3">
+    <div class="card ac5 lit"><span class="ctag">The cohort</span><span class="ctitle">A mixed Illinois + Chicago team</span><span class="ctext">We're bringing on University of Chicago students this cycle. You'd be in the same working sessions, on the same problems, producing the same deliverables.</span></div>
+    <div class="card lit"><span class="ctag">Why that matters</span><span class="ctitle">Their network becomes a door you've walked through</span><span class="ctext">Chicago's career development and entrepreneurship resources — Polsky among them — run deep. Peers from inside that system are a far better introduction to it than any cold email you'll ever send.</span></div>
+    <div class="card ac2 lit"><span class="ctag">The honest framing</span><span class="ctitle">Networks are built sideways, not upward</span><span class="ctext">Students spend years trying to meet senior people. The relationships that actually pay off over twenty years are the peers you did hard work beside at 23.</span></div>
+  </div>
+  <div class="kicker">The internship is the project. <span class="grad">The cohort is the compounding asset.</span></div>
+</section>
+
+<!-- 52 LINKEDIN -->
+<section class="slide" data-act="Work with us" data-title="Follow Sartori AI">
+  <div class="eyebrow"><span class="dot"></span><span class="n">37</span><span>Do this one now, from your seat</span></div>
+  <h1>Follow Sartori AI on LinkedIn. <span class="grad">Right now — it takes nine seconds.</span></h1>
+  <div class="grid g2" style="align-items:center">
+    <div class="card lit" style="align-items:center;justify-content:center;text-align:center">
+      <img class="qr" src="assets/qr_linkedin.png" alt="QR code to Sartori AI on LinkedIn" style="width:clamp(90px,15cqi,210px)">
+      <span class="ctag" style="margin-top:6px">Scan to follow</span>
+      <span class="ctext mono" style="font-size:clamp(7px,.8cqi,10.5px)">linkedin.com/company/sartori-inc</span>
+    </div>
+    <div class="card ac3" style="justify-content:center">
+      <span class="ctag">Why bother</span>
+      <ul class="tick">
+        <li><b>Internship openings get posted there first</b></li>
+        <li>You'll see whether the pilot closes — this story continues in public</li>
+        <li>It costs you nothing and puts you on the list that matters</li>
+        <li>And the broader point: the follow is free, the relationship compounds. Do this with every company whose work you respect.</li>
+      </ul>
+      <div class="btnrow" style="margin-top:4px">
+        <a class="btn pri" href="https://www.linkedin.com/company/sartori-inc/" target="_blank" rel="noopener">Sartori AI on LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+  <div class="kicker">Nine seconds now <span class="grad">beats a cold email in April.</span></div>
+</section>
+
+<!-- 53 -->
+<section class="slide concept" data-act="Close" data-title="Five things I'd tell a student founder">
+  <div class="eyebrow"><span class="dot"></span><span class="n">38</span><span>The slide to photograph</span></div>
+  <h1 class="big">Five things <span class="grad">I'd tell myself at your desk.</span></h1>
+  <div class="grid g5">
+    <div class="card lit"><span class="ctag">01</span><span class="ctitle">Do the weekend</span><span class="ctext">The thing with no obvious payoff is where the door is. Mine was 54 hours in 2012.</span></div>
+    <div class="card ac2 lit"><span class="ctag">02</span><span class="ctitle">Find the budget first</span><span class="ctext">Before the product, before the deck. Who has money, and does this already hurt enough to spend it?</span></div>
+    <div class="card ac3 lit"><span class="ctag">03</span><span class="ctitle">Write the bar down first</span><span class="ctext">Decide what "validated" means before you collect the data — or you'll grade your own exam.</span></div>
+    <div class="card ac4 lit"><span class="ctag">04</span><span class="ctitle">Narrow until it hurts</span><span class="ctext">It should feel embarrassingly small. If it feels appropriately ambitious, it's too wide.</span></div>
+    <div class="card ac5 lit"><span class="ctag">05</span><span class="ctitle">Say exactly what's true</span><span class="ctext">"Accepted," not "partnered." Precision is a competitive advantage almost nobody uses.</span></div>
+  </div>
+  <div class="kicker">None of this required being the smartest person in the room. <span class="grad">It required being the most specific one.</span></div>
+</section>
+
+<!-- 54 CLOSE -->
+<section class="slide" data-act="Close" data-title="Thank you — where to find me">
+  <div class="eyebrow"><span class="dot"></span><span class="n">39</span><span>Questions</span></div>
+  <h1>Thank you. <span class="grad">Let's talk.</span></h1>
+  <div class="grid g3" style="align-items:stretch">
+    <div class="card lit" style="align-items:center;text-align:center;justify-content:center">
+      <img class="qr" src="assets/qr_linkedin.png" alt="QR code — Sartori AI on LinkedIn">
+      <span class="ctag" style="margin-top:4px">Sartori AI</span>
+      <span class="ctext" style="font-size:clamp(8px,.9cqi,11.5px)">Follow for internship openings</span>
+    </div>
+    <div class="card ac3 lit" style="align-items:center;text-align:center;justify-content:center">
+      <img class="qr" src="assets/qr_profile.png" alt="QR code — R. Michael Merritt profile site">
+      <span class="ctag" style="margin-top:4px">My profile</span>
+      <span class="ctext" style="font-size:clamp(8px,.9cqi,11.5px)">Background, work and writing</span>
+    </div>
+    <div class="card ac5 lit" style="align-items:center;text-align:center;justify-content:center">
+      <img class="qr" src="assets/qr_quant.png" alt="QR code — quantitative portfolio">
+      <span class="ctag" style="margin-top:4px">Quant portfolio</span>
+      <span class="ctext" style="font-size:clamp(8px,.9cqi,11.5px)">Financial engineering project work</span>
+    </div>
+  </div>
+  <div class="btnrow" style="justify-content:center">
+    <a class="btn" href="https://www.linkedin.com/in/robert-merritt-mba-cpm-0559ab2a7" target="_blank" rel="noopener">Connect on LinkedIn ↗</a>
+    <a class="btn" href="https://www.sartori.ai" target="_blank" rel="noopener">sartori.ai ↗</a>
+    <a class="btn" href="https://enterprise.sartori.ai" target="_blank" rel="noopener">enterprise.sartori.ai ↗</a>
+  </div>
+  <div class="kicker">R. Michael Merritt <span class="grad">· Co-Founder &amp; CxTO, Sartori AI · Illinois, twice</span></div>
+</section>
+</div><!-- /#deck -->
+
+<button class="zone" id="zoneL" aria-label="Previous slide"></button>
+<button class="zone" id="zoneR" aria-label="Next slide"></button>
+
+<div id="hud">
+  <button id="modeB" title="Switch between one-slide presenting and a scrollable stack">Scroll</button>
+  <button id="ovBtn">Overview</button>
+  <span class="sep deckonly"></span>
+  <button class="nav deckonly" id="prevB" aria-label="Previous">‹</button>
+  <span id="cnt" class="deckonly">1 / 1</span>
+  <button class="nav deckonly" id="nextB" aria-label="Next">›</button>
+  <span class="sep deckonly"></span>
+  <button id="fsB" class="deckonly">Present</button>
+</div>
+<div id="hint">Click the deck, then use ← → · or click the edges of the screen</div>
+<div id="ov"></div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var body = document.body, i = 0;
+
+  // ---- one global gradient def for every glyph and diagram on the page
+  document.body.insertAdjacentHTML('afterbegin',
+    '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>'
+    + '<linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">'
+    + '<stop offset="0" stop-color="#35C7F0"/><stop offset=".24" stop-color="#7BD98A"/>'
+    + '<stop offset=".5" stop-color="#F4A83B"/><stop offset=".76" stop-color="#E1509E"/>'
+    + '<stop offset="1" stop-color="#8B5CF6"/></linearGradient>'
+    + '<linearGradient id="sgh" x1="0" y1="0" x2="1" y2="0">'
+    + '<stop offset="0" stop-color="#35C7F0"/><stop offset=".3" stop-color="#7BD98A"/>'
+    + '<stop offset=".55" stop-color="#F4A83B"/><stop offset=".8" stop-color="#E1509E"/>'
+    + '<stop offset="1" stop-color="#8B5CF6"/></linearGradient>'
+    + '</defs></svg>');
+
+  var MARK = '<svg class="mark" viewBox="0 0 100 112" fill="none" aria-hidden="true">'
+    + '<path d="M50 2 97 29v54L50 110 3 83V29z" stroke="url(#sg)" stroke-width="7" stroke-linejoin="round"/>'
+    + '<path d="M68 38H44a9 9 0 0 0 0 18h12a9 9 0 0 1 0 18H32" stroke="url(#sg)" '
+    + 'stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  slides.forEach(function(s,n){ if(n>0) s.insertAdjacentHTML('afterbegin', MARK); });
+
+  // ---- glyph library: stroke icons that head a card
+  var G = {
+    clock:'<circle cx="24" cy="24" r="18"/><path d="M24 13v12l8 5"/>',
+    door:'<path d="M14 8h20v32H14z"/><path d="M28 24h.01"/><path d="M34 24h8m-4-4 4 4-4 4"/>',
+    chain:'<path d="M20 28a8 8 0 0 1 0-11l4-4a8 8 0 0 1 11 11l-2 2"/><path d="M28 20a8 8 0 0 1 0 11l-4 4a8 8 0 0 1-11-11l2-2"/>',
+    trend:'<path d="M8 36l10-11 7 6 15-17"/><path d="M33 14h7v7"/>',
+    layers:'<path d="M24 8 42 17 24 26 6 17z"/><path d="M6 24l18 9 18-9"/><path d="M6 31l18 9 18-9"/>',
+    tag:'<path d="M8 8h14l18 18-14 14L8 22z"/><circle cx="17" cy="17" r="3"/>',
+    box:'<path d="M8 15 24 7l16 8v18l-16 8-16-8z"/><path d="M8 15l16 8 16-8M24 23v18"/>',
+    brain:'<path d="M24 11v26"/><path d="M24 14a7 7 0 0 0-12 5 6 6 0 0 0-1 11 7 7 0 0 0 13 3"/><path d="M24 14a7 7 0 0 1 12 5 6 6 0 0 1 1 11 7 7 0 0 1-13 3"/>',
+    flask:'<path d="M19 7h10M21 7v12L10 38a3 3 0 0 0 3 4h22a3 3 0 0 0 3-4L27 19V7"/><path d="M15 30h18"/>',
+    cube:'<path d="M24 6 40 15v18l-16 9-16-9V15z"/><path d="M8 15l16 9 16-9M24 24v18"/>',
+    exit:'<path d="M10 38V14a2 2 0 0 1 2-2h12"/><path d="M22 24h18m-6-6 6 6-6 6"/><circle cx="16" cy="24" r="2"/>',
+    target:'<circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="2.5"/>',
+    wedge:'<path d="M6 40 40 8"/><path d="M6 40h34V8"/>',
+    funnel:'<path d="M7 9h34L28 25v14l-8 5V25z"/>',
+    people:'<circle cx="17" cy="18" r="6"/><circle cx="33" cy="20" r="5"/><path d="M7 40c0-6 5-10 10-10s10 4 10 10"/><path d="M29 40c0-5 3-8 7-8s7 3 7 8"/>',
+    shield:'<path d="M24 6 40 12v12c0 10-7 15-16 18-9-3-16-8-16-18V12z"/><path d="M17 24l5 5 10-10"/>',
+    search:'<circle cx="21" cy="21" r="12"/><path d="M30 30l11 11"/>',
+    money:'<path d="M8 12h32v24H8z"/><circle cx="24" cy="24" r="6"/><path d="M14 18h.01M34 30h.01"/>',
+    grid9:'<path d="M8 8h32v32H8z"/><path d="M19 8v32M30 8v32M8 19h32M8 30h32"/>',
+    spark:'<path d="M24 5l5 13 13 5-13 5-5 13-5-13-13-5 13-5z"/>',
+    rocket:'<path d="M24 5c7 6 10 14 10 22l-5 7H19l-5-7c0-8 3-16 10-22z"/><circle cx="24" cy="20" r="4"/><path d="M19 34l-5 8 8-3M29 34l5 8-8-3"/>',
+    build:'<path d="M10 40V22l14-9 14 9v18"/><path d="M19 40V29h10v11"/>',
+    warn:'<path d="M24 8 42 39H6z"/><path d="M24 20v9m0 5h.01"/>',
+    link:'<path d="M26 22a8 8 0 0 1 0 11l-5 5a8 8 0 0 1-11-11l3-3"/><path d="M22 26a8 8 0 0 1 0-11l5-5a8 8 0 0 1 11 11l-3 3"/>',
+    doc:'<path d="M13 6h16l8 8v28H13z"/><path d="M29 6v9h8"/><path d="M19 25h12M19 32h12"/>',
+    pin:'<path d="M24 42s13-13 13-23A13 13 0 0 0 11 19c0 10 13 23 13 23z"/><circle cx="24" cy="19" r="5"/>'
+  };
+  function glyph(n){
+    if(!G[n]) return '';
+    return '<div class="ico"><svg viewBox="0 0 48 48" fill="none" stroke="url(#sg)" '
+      + 'stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' + G[n] + '</svg></div>';
+  }
+  // which glyphs head the cards of which slide, by slide title
+  var ICONS = {
+    "I sat where you're sitting — twice":['brain','trend','rocket'],
+    "What you'll leave with":['target','search','wedge','grid9','money'],
+    "Illinois, twice":['brain','trend'],
+    "The tools I went back for":['spark','brain','build','money'],
+    "Patient Tracker — Startup Weekend 1871":['clock','build'],
+    "The twist":['shield','warn'],
+    "The prize was never the prize":['target','door'],
+    "Google Vertex AI":['layers','build','warn'],
+    "Macy's, then Disney":['tag','box'],
+    "IBM Watson":['layers','warn','rocket'],
+    "The IP trail":['doc','doc','link'],
+    "3D pharmaceutical printing":['flask','warn','target'],
+    "Galian":['cube','build','warn'],
+    "MedHOK — the exit":['exit','trend'],
+    "The pattern":['warn','warn','shield','money'],
+    "Why accelerators matter":['warn','clock','shield','link'],
+    "University of Chicago — Polsky":['pin','trend'],
+    "Rev1 — Ohio State":['pin','doc','link'],
+    "Harvard — accepted":['shield','trend'],
+    "The founding problem":['tag','box','brain'],
+    "What we built":['layers','link','grid9','brain'],
+    "What customers actually told us":['spark','warn','money','search'],
+    "Concept — problem / solution fit":['warn','shield'],
+    "The realization":['search','trend'],
+    "Concept — B2B2C":['spark','warn','shield'],
+    "Concept — user ≠ buyer ≠ champion":['build','people','money'],
+    "The 13-area drill-down":['target','trend','link','box','build','tag','warn','warn'],
+    "Concept — the wedge":['wedge','warn'],
+    "The verdict — returns":['target','search','clock','link','shield'],
+    "The Reverse Intelligence Snapshot":['search','trend','doc'],
+    "Concept — validation vs. vanity":['target','search','money','doc','shield','spark'],
+    "Concept — the sales funnel":['shield','people','trend'],
+    "Pre-seed reality":['warn','clock','shield'],
+    "A system, not a hustle":['grid9','money','funnel','shield'],
+    "Where Sartori is today":['shield','funnel','trend'],
+    "What's ahead":['spark','doc','trend','people'],
+    "Internships at Sartori AI":['people','build'],
+    "Who you'd be working alongside":['people','link','trend'],
+    "Five things I'd tell a student founder":['door','money','target','wedge','shield']
+  };
+  slides.forEach(function(s){
+    var map = ICONS[s.getAttribute('data-title')||''];
+    if(!map) return;
+    var cards = s.querySelectorAll('.grid > .card');
+    cards.forEach(function(c,k){
+      if(!map[k] || c.querySelector('.ico')) return;
+      c.insertAdjacentHTML('afterbegin', glyph(map[k]));
+    });
+  });
+
+  // ---- infographic bands: a diagram that teaches, sized to the slide width
+  function band(inner, h){
+    return '<div class="band"><svg viewBox="0 0 1200 '+(h||230)+'" preserveAspectRatio="xMidYMid meet" '
+      + 'fill="none" font-family="JetBrains Mono, monospace">' + inner + '</svg></div>';
+  }
+  var T = function(x,y,s,o){ o=o||{};
+    return '<text x="'+x+'" y="'+y+'" fill="'+(o.c||'#95A3BD')+'" font-size="'+(o.s||17)+'" '
+      + 'letter-spacing="'+(o.ls||'1.6')+'" text-anchor="'+(o.a||'middle')+'"'
+      + (o.w?' font-weight="'+o.w+'"':'')+(o.f?' font-family="'+o.f+'"':'')+'>'+s+'</text>'; };
+  var HI='#F2F6FD', AL='Albert Sans, sans-serif';
+
+  var BANDS = {};
+
+  // 54 hours, as a dial
+  BANDS["Patient Tracker — Startup Weekend 1871"] = band(
+    '<circle cx="600" cy="118" r="86" stroke="#1C2742" stroke-width="14"/>'
+    + '<circle cx="600" cy="118" r="86" stroke="url(#sgh)" stroke-width="14" stroke-linecap="round"'
+    + ' stroke-dasharray="540 540" stroke-dashoffset="135" transform="rotate(-90 600 118)"/>'
+    + T(600,112,'54',{c:HI,s:54,w:700,f:AL}) + T(600,140,'HOURS',{s:15,ls:'5'})
+    + '<path d="M250 118h200" stroke="#2A3759" stroke-width="2" stroke-dasharray="5 7"/>'
+    + '<path d="M750 118h200" stroke="#2A3759" stroke-width="2" stroke-dasharray="5 7"/>'
+    + T(250,112,'FRI 7PM',{a:'start',s:15,ls:'3'}) + T(250,138,'strangers',{a:'start',s:14,c:'#5F6E8C'})
+    + T(950,112,'SUN 9PM',{a:'end',s:15,ls:'3'}) + T(950,138,'a shipped product',{a:'end',s:14,c:'#5F6E8C'}),
+    236);
+
+  // the hinge: trophy vs the door that actually opened
+  BANDS["The prize was never the prize"] = band(
+    '<rect x="90" y="52" width="420" height="130" rx="16" stroke="#2A3759" stroke-width="2"/>'
+    + T(300,104,'WHAT WE THOUGHT WE WON',{s:14,ls:'3.4'})
+    + T(300,146,'A trophy',{c:'#6B7A96',s:30,w:600,f:AL})
+    + '<path d="M540 117h120" stroke="url(#sgh)" stroke-width="3"/>'
+    + '<path d="M644 107l16 10-16 10" stroke="url(#sgh)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<rect x="690" y="40" width="420" height="154" rx="16" stroke="url(#sgh)" stroke-width="2.5" fill="rgba(53,199,240,.06)"/>'
+    + T(900,92,'WHAT WE ACTUALLY WON',{s:14,ls:'3.4',c:'#35C7F0'})
+    + T(900,134,'Google recruited',{c:HI,s:30,w:600,f:AL})
+    + T(900,170,'off that team',{c:HI,s:30,w:600,f:AL}),
+    234);
+
+  // platform scale: many consumers on one base
+  BANDS["Google Vertex AI"] = band(
+    '<rect x="120" y="150" width="960" height="46" rx="10" stroke="url(#sgh)" stroke-width="2.5" fill="rgba(53,199,240,.07)"/>'
+    + T(600,179,'ONE PLATFORM — VERSIONED, MONITORED, ON CALL',{s:15,ls:'3.4',c:'#9FB4D8'})
+    + (function(){var o='';for(var i=0;i<9;i++){var x=150+i*103;
+        o+='<rect x="'+x+'" y="44" width="78" height="46" rx="9" stroke="#2A3759" stroke-width="2"/>';
+        
+        o+='<path d="M'+(x+39)+' 90v60" stroke="#28375C" stroke-width="2"/>';}
+       return o;})()
+    + T(600,28,'THOUSANDS OF TEAMS BUILDING ON TOP',{s:14,ls:'3.4'}),
+    226);
+
+  // seven years of enterprise gates
+  BANDS["IBM Watson"] = band(
+    (function(){var labs=['INTEREST','PILOT','SECURITY','PROCUREMENT','BUDGET OWNER','SIGNED'];
+      var o='';for(var i=0;i<6;i++){var x=60+i*192, w=170, h=150-i*18, y=40+(i*9);
+        var last=(i===5);
+        o+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" stroke="'
+          +(last?'url(#sgh)':'#2A3759')+'" stroke-width="'+(last?3:2)+'" fill="'
+          +(last?'rgba(123,217,138,.1)':'rgba(16,24,48,.5)')+'"/>';
+        o+=T(x+w/2, y+h/2+6, labs[i], {s:14,ls:'2.6',c:last?'#7BD98A':'#7D8CA8'});
+        if(i<5) o+='<path d="M'+(x+w+6)+' '+(y+h/2)+'h12" stroke="#3A4A70" stroke-width="2"/>';}
+      return o;})()
+    + T(600,218,'Almost never lost on the technology. Lost where nobody owned a budget.',
+        {s:17,c:'#C6D0E2',f:AL,ls:'0'}),
+    232);
+
+  // printed dose, stopped by a regulatory wall
+  BANDS["3D pharmaceutical printing"] = band(
+    (function(){var o='';for(var i=0;i<7;i++){var w=160-i*12;
+      o+='<rect x="'+(240-w/2)+'" y="'+(176-i*20)+'" width="'+w+'" height="15" rx="4" stroke="url(#sgh)" '
+        +'stroke-width="2" opacity="'+(0.35+i*0.09)+'"/>';} return o;})()
+    + T(240,212,'DOSE, PRINTED TO THE PATIENT',{s:14,ls:'2.8'})
+    + '<path d="M560 24v180" stroke="#E1509E" stroke-width="3" stroke-dasharray="10 9"/>'
+    + T(580,60,'REGULATORY PATH',{a:'start',s:15,ls:'3.2',c:'#E1509E'})
+    + T(580,104,'The question was never',{a:'start',c:'#C6D0E2',s:21,f:AL,ls:'0'})
+    + T(580,136,'"can we build it."',{a:'start',c:HI,s:23,w:600,f:AL,ls:'0'})
+    + T(580,178,'It was "who is allowed to say yes."',{a:'start',c:HI,s:23,w:600,f:AL,ls:'0'}),
+    228);
+
+  // 2D slices reconstructed into depth
+  BANDS["Galian"] = band(
+    (function(){var o='';for(var i=0;i<5;i++){var x=90+i*58;
+      o+='<rect x="'+x+'" y="56" width="44" height="110" rx="5" stroke="#35C7F0" stroke-width="2" opacity=".55"/>';}
+      return o;})()
+    + T(220,198,'2D IMAGING SLICES',{s:14,ls:'2.8'})
+    + '<path d="M420 112h110" stroke="url(#sgh)" stroke-width="3"/>'
+    + '<path d="M514 102l16 10-16 10" stroke="url(#sgh)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<path d="M700 40 830 78v96l-130 38-130-38V78z" stroke="url(#sgh)" stroke-width="2.5" fill="rgba(139,92,246,.1)"/>'
+    + '<path d="M570 78l130 38 130-38M700 116v96" stroke="url(#sgh)" stroke-width="2" opacity=".65"/>'
+    + T(700,236,'RECONSTRUCTED DEPTH',{s:14,ls:'2.8'})
+    + T(1010,104,'Hard to build',{c:HI,s:22,w:600,f:AL,ls:'0'})
+    + T(1010,136,'≠ hard to sell',{c:'#E1509E',s:22,w:600,f:AL,ls:'0'}),
+    250);
+
+  // the wedge, drawn
+  BANDS["Concept — the wedge"] = band(
+    '<path d="M70 118 1080 26v184z" stroke="url(#sgh)" stroke-width="3" fill="rgba(53,199,240,.07)"/>'
+    + '<circle cx="70" cy="118" r="9" fill="#35C7F0"/>'
+    + T(74,96,'NARROW ENTRY',{a:'start',s:15,ls:'3.2',c:'#35C7F0'})
+    + T(74,172,'one painful, budgeted problem',{a:'start',s:15,ls:'1.2',c:'#7D8CA8'})
+    + T(1076,62,'WIDE EXPANSION',{a:'end',s:15,ls:'3.2',c:'#8B5CF6'})
+    + T(1076,186,'the adjacent doors it opens',{a:'end',s:15,ls:'1.2',c:'#7D8CA8'}),
+    226);
+
+  // the funnel, drawn with real stage names
+  BANDS["Concept — the sales funnel"] = band(
+    (function(){var st=['Target list','Qualified conversation','Assessment taken','Diagnostic engagement','Signed pilot','Annual contract'];
+      var o='';for(var i=0;i<6;i++){
+        var wTop=820-i*125, wBot=820-(i+1)*125, y=18+i*34;
+        var xT=600-wTop/2, xB=600-wBot/2;
+        var last=(i===5);
+        o+='<path d="M'+xT+' '+y+'h'+wTop+'l'+(-(wTop-wBot)/2)+' 30H'+(xB)+'z" stroke="'
+          +(last?'url(#sgh)':'#3A4A70')+'" stroke-width="2" fill="rgba(53,199,240,'+(0.04+i*0.025)+')"/>';
+        o+=T(600,y+21,st[i].toUpperCase(),{s:13,ls:'2.4',c:last?'#7BD98A':'#9FB4D8'});}
+      return o;})()
+    + T(600,246,'Each boundary is an exit test — something THEY did, not something you sent.',
+        {s:17,c:'#C6D0E2',f:AL,ls:'0'}),
+    262);
+
+  // exit anatomy
+  BANDS["MedHOK — the exit"] = band(
+    '<path d="M80 180C300 180 420 60 1040 48" stroke="url(#sgh)" stroke-width="3"/>'
+    + '<circle cx="1040" cy="48" r="10" fill="#8B5CF6"/>'
+    + T(1030,26,'ACQUISITION',{a:'end',s:15,ls:'3.2',c:'#8B5CF6'})
+    + '<path d="M80 196v-30M300 196v-44M520 196v-70M740 196v-96" stroke="#2A3759" stroke-width="2"/>'
+    + T(400,222,'the boring compounding years — this is the whole thing',{s:16,c:'#7D8CA8',f:AL,ls:'0'})
+    + T(1040,92,'the least',{a:'end',c:'#6B7A96',s:19,f:AL,ls:'0'})
+    + T(1040,116,'interesting part',{a:'end',c:'#6B7A96',s:19,f:AL,ls:'0'}),
+    238);
+
+  // the funnel drawing replaces the row of stage boxes it duplicates
+  var FUNNEL_SLIDE = "Concept — the sales funnel";
+
+  // the IP trail: three filings feeding one graph
+  BANDS["The IP trail"] = band(
+    '<circle cx="600" cy="110" r="52" stroke="url(#sgh)" stroke-width="3" fill="rgba(139,92,246,.1)"/>'
+    + T(600,104,'20+',{c:HI,s:30,w:700,f:AL}) + T(600,130,'FILINGS',{s:12,ls:'3.4'})
+    + (function(){var o='',pts=[[180,52],[180,168],[1020,52],[1020,168]];
+        for(var i=0;i<4;i++){var x=pts[i][0],y=pts[i][1],left=x<600;
+          o+='<circle cx="'+x+'" cy="'+y+'" r="7" fill="'+(left?'#35C7F0':'#E1509E')+'"/>';
+          o+='<path d="M'+x+' '+y+'Q'+(left?400:800)+' '+y+' '+(left?552:648)+' 110" stroke="#2F3E63" stroke-width="2"/>';}
+        return o;})()
+    + T(362,30,'PROXIMITY RECOMMENDATION',{a:'end',s:13,ls:'2.4'})
+    + T(362,196,'SOCIAL-GRAPH INFERENCE',{a:'end',s:13,ls:'2.4'})
+    + T(838,30,'PRIVACY-AWARE AI NETWORKING',{a:'start',s:13,ls:'2.4'})
+    + T(838,196,'FASHION RECOMMENDATION — RL',{a:'start',s:13,ls:'2.4'})
+    + T(600,215,'Discovery Partners Institute · University of Illinois System',{s:17,c:'#C6D0E2',f:AL,ls:'0'}),
+    232);
+
+  // what we built: nine surfaces over one index
+  BANDS["What we built"] = band(
+    (function(){var n=['CX','BX','DX','RX','WX','SX','PX','MX','IX'],o='';
+      for(var i=0;i<9;i++){var x=150+i*103;
+        o+='<rect x="'+x+'" y="26" width="80" height="52" rx="10" stroke="#35C7F0" stroke-width="2" opacity=".75"/>';
+        o+=T(x+40,58,n[i],{c:'#9FB4D8',s:17,ls:'2'});
+        o+='<path d="M'+(x+40)+' 78v34" stroke="#28375C" stroke-width="2"/>';}
+      return o;})()
+    + '<rect x="150" y="112" width="903" height="50" rx="12" stroke="url(#sgh)" stroke-width="2.5" fill="rgba(139,92,246,.09)"/>'
+    + T(601,143,'CLIP + FAISS  ·  105,000 GARMENT EMBEDDINGS  ·  ~87 ENDPOINTS',{s:16,ls:'2.6',c:'#C6D0E2'})
+    + T(601,200,'Two years of architecture before we knew who was paying.',{s:18,c:'#E1509E',f:AL,ls:'0',w:600}),
+    216);
+
+  // what customers said: delight vs willingness to pay
+  BANDS["What customers actually told us"] = band(
+    '<rect x="90" y="40" width="440" height="132" rx="14" stroke="#7BD98A" stroke-width="2" fill="rgba(123,217,138,.07)"/>'
+    + T(310,80,'ENTHUSIASM',{s:14,ls:'3.4',c:'#7BD98A'}) + T(310,126,'High',{c:HI,s:36,w:700,f:AL})
+    + '<rect x="670" y="40" width="440" height="132" rx="14" stroke="#E1509E" stroke-width="2" fill="rgba(225,80,158,.07)"/>'
+    + T(890,80,'WILLINGNESS TO PAY MONTHLY',{s:14,ls:'3.4',c:'#E1509E'}) + T(890,126,'Near zero',{c:HI,s:36,w:700,f:AL})
+    + T(600,116,'vs',{s:20,c:'#5F6E8C'})
+    + T(600,206,'Delight is not a bill. It does not survive a renewal screen.',{s:18,c:'#C6D0E2',f:AL,ls:'0'}),
+    224);
+
+  // the founding problem
+  BANDS["The founding problem"] = band(
+    (function(){var o='';for(var i=0;i<16;i++){var x=120+(i%8)*62, y=40+Math.floor(i/8)*78, ret=(i%8)>=6;
+      o+='<path d="M'+x+' '+(y+14)+'l12-9h20l12 9-9 9-5-4v34h-26v-34l-5 4z" stroke="'
+        +(ret?'#E1509E':'#354A74')+'" stroke-width="2" fill="none"/>';}
+      return o;})()
+    + T(300,196,'~1 IN 4 APPAREL PURCHASES COMES BACK',{s:15,ls:'2.6',c:'#E1509E'})
+    + '<path d="M640 30v160" stroke="#2A3759" stroke-width="2" stroke-dasharray="7 8"/>'
+    + T(680,76,'The brand can see',{a:'start',c:'#C6D0E2',s:23,f:AL,ls:'0'})
+    + T(680,110,'THAT it came back.',{a:'start',c:HI,s:25,w:600,f:AL,ls:'0'})
+    + T(680,156,'Almost never WHY.',{a:'start',c:'#E1509E',s:25,w:600,f:AL,ls:'0'}),
+    220);
+
+  // the twist, as a timeline rather than five boxes
+  BANDS["The twist"] = band(
+    '<path d="M80 120h1040" stroke="#2A3759" stroke-width="3"/>'
+    + (function(){var pts=[[150,'SUNDAY NIGHT','Runner-up','#6B7A96'],
+        [430,'CEREMONY ENDS','Everyone leaves','#6B7A96'],
+        [700,'~15–20 MIN LATER','Cheating found','#F4A83B'],
+        [900,'IMMEDIATE','Disqualified','#E1509E'],
+        [1080,'ON THE SPOT','We are crowned','#7BD98A']],o='';
+      for(var i=0;i<5;i++){var x=pts[i][0],c=pts[i][3],up=(i%2===0);
+        o+='<circle cx="'+x+'" cy="120" r="'+(i===4?11:8)+'" fill="'+c+'"/>';
+        o+='<path d="M'+x+' '+(up?112:128)+'V'+(up?86:154)+'" stroke="'+c+'" stroke-width="2" opacity=".6"/>';
+        o+=T(x,up?74:172,pts[i][1],{s:12,ls:'2.4',c:'#7D8CA8'});
+        o+=T(x,up?50:196,pts[i][2],{s:19,w:600,f:AL,ls:'0',c:c});}
+      return o;})(),
+    222);
+
+  // accelerators compounding
+  BANDS["Why accelerators matter"] = band(
+    (function(){var labs=['First yes','Second yes','Third yes'],o='';
+      for(var i=0;i<3;i++){var x=200+i*340, r=38+i*16;
+        o+='<circle cx="'+x+'" cy="112" r="'+r+'" stroke="url(#sgh)" stroke-width="2.5" fill="rgba(53,199,240,'+(0.05+i*0.05)+')"/>';
+        o+=T(x,118,labs[i],{c:HI,s:17,w:600,f:AL,ls:'0'});
+        if(i<2) o+='<path d="M'+(x+r+14)+' 112h'+(340-2*r-46)+'" stroke="#3A4A70" stroke-width="2"/>'
+          +'<path d="M'+(x+340-r-26)+' 104l10 8-10 8" stroke="#3A4A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';}
+      return o;})()
+    + T(600,206,'Hardest, then cheaper, then likely — this is the least appreciated mechanic in early fundraising.',
+        {s:17,c:'#C6D0E2',f:AL,ls:'0'}),
+    224);
+
+  slides.forEach(function(s){
+    var b = BANDS[s.getAttribute('data-title')||'']; if(!b) return;
+    if(s.getAttribute('data-title') === FUNNEL_SLIDE){
+      var ch = s.querySelector('.chain'); if(ch) ch.remove();
+    }
+    var anchor = s.querySelector('.grid, .chain');
+    if(anchor) anchor.insertAdjacentHTML('beforebegin', b);
+    else { var k=s.querySelector('.kicker'); if(k) k.insertAdjacentHTML('beforebegin', b); }
+    if(s.querySelector('.grid')) s.classList.add('bandgrid');
+  });
+
+  // ---- photographic backing on slides that carry the brand, not a diagram
+  var PHOTO = {
+    "The founding problem":"58% 38%",
+    "What we built":"22% 60%",
+    "What customers actually told us":"74% 44%",
+    "Where Sartori is today":"40% 30%",
+    "Internships at Sartori AI":"14% 55%",
+    "Who you'd be working alongside":"86% 48%",
+    "Five things I'd tell a student founder":"50% 22%",
+    "Thank you — where to find me":"66% 62%"
+  };
+  slides.forEach(function(s){
+    var pos = PHOTO[s.getAttribute('data-title')||'']; if(!pos) return;
+    s.classList.add('hasphoto');
+    s.insertAdjacentHTML('afterbegin',
+      '<img class="bgphoto" src="assets/runway.jpg" alt="" style="object-position:'+pos+'">'
+      + '<div class="bgveil"></div>');
+  });
+
+
+  // ---- wrap content so it can be scaled to fit, and auto-fit every slide
+  slides.forEach(function(s){
+    if(s.querySelector(':scope > .fitwrap')) return;
+    var w = document.createElement('div'); w.className = 'fitwrap';
+    var keep = {IMG:1};
+    Array.prototype.slice.call(s.children).forEach(function(ch){
+      if(ch.classList.contains('bgphoto') || ch.classList.contains('bgveil')
+         || ch.classList.contains('mark')) return;
+      w.appendChild(ch);
+    });
+    s.appendChild(w);
+  });
+
+  function fit(s){
+    var w = s.querySelector(':scope > .fitwrap'); if(!w) return;
+    // reset, then measure the content's natural height at this width
+    w.style.transform = 'none'; w.style.flex = ''; w.style.height = '';
+    var avail = w.clientHeight; if(!avail) return;
+    w.style.flex = '0 0 auto'; w.style.height = 'auto';
+    var natural = w.scrollHeight;
+    if(natural <= avail + 1){ w.style.flex = ''; w.style.height = ''; return; }
+    var k = Math.max(0.52, (avail / natural) * 0.995);
+    w.style.height = (avail / k) + 'px';
+    w.style.transform = 'scale(' + k + ')';
+  }
+  function fitAll(){ slides.forEach(function(s){
+    var wasOff = (mode === 'deck' && !s.classList.contains('on'));
+    if(wasOff){ s.style.display='flex'; s.style.visibility='hidden'; }
+    fit(s);
+    if(wasOff){ s.style.display=''; s.style.visibility=''; }
+  }); }
+
+  var prog = document.getElementById('prog'), hud = document.getElementById('hud'),
+      cnt = document.getElementById('cnt'), ov = document.getElementById('ov'),
+      hint = document.getElementById('hint'), modeB = document.getElementById('modeB');
+
+  function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function load(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+
+  function narrow(){ return window.matchMedia('(max-width:820px)').matches; }
+
+  var mode = load('deckmode') || (narrow() ? 'scroll' : 'deck');
+
+  function applyMode(){
+    body.classList.toggle('mode-deck', mode==='deck');
+    body.classList.toggle('mode-scroll', mode==='scroll');
+    modeB.textContent = (mode==='deck') ? 'Scroll' : 'Present view';
+    if(mode==='scroll'){
+      slides.forEach(loadEmbed);
+      prog.style.width='0';
+      setTimeout(fitAll, 40);
+    } else {
+      show(i);
+    }
+  }
+
+  function loadEmbed(s){
+    var url = s.getAttribute('data-embed'); if(!url) return;
+    var f = s.querySelector('.frame'); if(!f || f.querySelector('iframe')) return;
+    var ifr = document.createElement('iframe');
+    ifr.src = url; ifr.loading='lazy'; ifr.referrerPolicy='no-referrer-when-downgrade';
+    ifr.allow='autoplay; fullscreen; picture-in-picture';
+    ifr.setAttribute('allowfullscreen','');
+    f.appendChild(ifr);
+  }
+
+  function show(n){
+    if(mode!=='deck') return;
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach(function(s,k){ s.classList.toggle('on', k===i); });
+    cnt.textContent = (i+1) + ' / ' + slides.length;
+    prog.style.width = ((i+1)/slides.length*100) + '%';
+    loadEmbed(slides[i]); if(slides[i+1]) loadEmbed(slides[i+1]);
+    fit(slides[i]);
+  }
+  function go(d){ if(mode==='deck') show(i+d); }
+
+  // --- keyboard: bind widely, and grab focus so a framed page still hears keys
+  function onKey(e){
+    var k = e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){ e.preventDefault(); go(1); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); go(-1); }
+    else if(k==='Home'){ show(0); } else if(k==='End'){ show(slides.length-1); }
+    else if(k==='o'||k==='O'){ ov.classList.toggle('on'); }
+    else if(k==='Escape'){ ov.classList.remove('on'); exitPresent(); }
+    else if(k==='f'||k==='F'){ togglePresent(); }
+    else if(k==='s'||k==='S'){ toggleMode(); }
+  }
+  document.addEventListener('keydown', onKey);
+  window.addEventListener('keydown', onKey);
+  try{ window.focus(); }catch(e){}
+  document.addEventListener('pointerdown', function(){ try{ window.focus(); }catch(e){} }, true);
+
+  // --- edge click zones (work with no keyboard focus at all)
+  document.getElementById('zoneL').onclick = function(){ go(-1); hideHint(); };
+  document.getElementById('zoneR').onclick = function(){ go(1);  hideHint(); };
+
+  // --- present mode: real fullscreen if the frame permits it, CSS fallback if not
+  function togglePresent(){
+    if(document.fullscreenElement){ exitPresent(); return; }
+    var el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if(req){
+      try{
+        var r = req.call(el);
+        if(r && r.catch) r.catch(function(){ /* blocked in frame — nothing else to do */ });
+      }catch(e){}
+    }
+    hideHint();
+  }
+  function exitPresent(){
+    if(document.fullscreenElement && document.exitFullscreen){
+      try{ document.exitFullscreen(); }catch(e){}
+    }
+  }
+  document.getElementById('fsB').onclick = togglePresent;
+  document.getElementById('prevB').onclick = function(){ go(-1); };
+  document.getElementById('nextB').onclick = function(){ go(1); };
+  document.getElementById('ovBtn').onclick = function(){ ov.classList.toggle('on'); hideHint(); };
+
+  function toggleMode(){
+    mode = (mode==='deck') ? 'scroll' : 'deck';
+    store('deckmode', mode); applyMode();
+    if(mode==='deck'){ show(i); window.scrollTo(0,0); }
+    else {
+      var t = slides[i];
+      if(t) setTimeout(function(){ t.scrollIntoView({block:'start'}); }, 30);
+    }
+  }
+  modeB.onclick = toggleMode;
+
+  function hideHint(){ if(hint) hint.classList.add('gone'); }
+  setTimeout(hideHint, 9000);
+
+  // --- overview
+  slides.forEach(function(s,n){
+    var c = document.createElement('div'); c.className='ovc';
+    c.innerHTML = '<span class="i">'+String(n+1).padStart(2,'0')+'</span>'
+      + '<span class="t">'+(s.getAttribute('data-title')||'')+'</span>'
+      + '<span class="a">'+(s.getAttribute('data-act')||'')+'</span>';
+    c.onclick = function(){
+      ov.classList.remove('on');
+      i = n;
+      if(mode==='deck'){ show(n); }
+      else { s.scrollIntoView({block:'start', behavior:'smooth'}); }
+    };
+    ov.appendChild(c);
+  });
+
+  // dim the bar while the mouse is still, never hide it
+  var t; function wake(){ hud.classList.remove('dim'); clearTimeout(t);
+    t = setTimeout(function(){ hud.classList.add('dim'); }, 3500); }
+  document.addEventListener('mousemove', wake); wake();
+
+  // swipe
+  var x0=null;
+  document.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(x0===null) return; var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>60) go(dx<0?1:-1); x0=null;
+  },{passive:true});
+
+  applyMode();
+  if(mode==='deck') show(0);
+  fitAll();
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ fitAll(); }); }
+  window.addEventListener('resize', function(){ clearTimeout(window.__ft);
+    window.__ft = setTimeout(fitAll, 140); });
+  setTimeout(fitAll, 600); setTimeout(fitAll, 1600);
+})();
+</script>
+</body>
+</html>
